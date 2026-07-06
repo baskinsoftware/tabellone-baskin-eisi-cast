@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Configurazione di sicurezza di rete.
+
+    Consente il traffico HTTP "in chiaro" (cleartext), necessario perché il
+    dispositivo BaskinCam sulla rete locale espone un semplice endpoint HTTP
+    (es. http://192.168.1.50:8080/score) senza certificato TLS.
+
+    Nota tecnica: Android non permette di limitare il cleartext a un intervallo
+    di indirizzi (es. solo IP privati 192.168.x / 10.x / 172.16-31.x); le regole
+    per-dominio richiedono host noti, mentre qui l'indirizzo del BaskinCam è
+    scelto dall'utente. Per questo il cleartext è consentito a livello "base".
+
+    In pratica l'ambito resta ristretto al solo BaskinCam: l'app non contatta
+    alcun server remoto, tutti gli asset della PWA sono locali e i link esterni
+    vengono aperti nel browser di sistema. Se lo streaming non viene attivato
+    dalle impostazioni, non viene aperta alcuna connessione.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

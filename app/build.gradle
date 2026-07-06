@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'it.uncledan.baskintabellonecast'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "it.uncledan.baskintabellonecast"
+        minSdk 21
+        targetSdk 34
+        versionCode 10000
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            // Nessuna signingConfig: in locale, per un APK firmato, usa il tuo keystore.
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    // web server integrato per la modalità sola visualizzazione (LAN + display secondario)
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+}
