@@ -1,0 +1,50 @@
+name: Beta APK (debug)
+
+# Compila un APK di DEBUG con suffisso "-beta", senza bisogno di keystore né
+# segreti (il debug è firmato con la chiave di debug di Android).
+#
+# Si avvia:
+#  - a mano dal tab "Actions" → "Beta APK (debug)" → "Run workflow";
+#  - automaticamente ad ogni push sul branch "beta".
+#
+# L'APK non viene pubblicato in una Release: resta come "artifact" scaricabile
+# dalla pagina del run (adatto ai test rapidi).
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+
+jobs:
+  beta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build APK debug (-beta)
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Prepara l'artifact
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             "out/TabelloneBaskinCast-beta-${GITHUB_SHA::7}.apk"
+
+      - name: Carica l'APK beta come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TabelloneBaskinCast-beta
+          path: out/*.apk

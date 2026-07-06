@@ -5,7 +5,7 @@
    ===================================================================== */
 'use strict';
 
-const APP_VERSION = '1.15.0';
+const APP_VERSION = '1.15.5';
 const STORE_KEY = 'baskin-tabellone-v1';
 
 /* Modalità "sola visualizzazione": attivata con ?display=1 nell'URL.
@@ -1316,6 +1316,25 @@ function toggleScoreColor(){
 onActivate($('#btnMore'), ()=>{ updateMuteLabel(); updateFoulLabel(); updateScoreColorLabel(); openSheet('moreBackdrop'); });
 onActivate($('#moreClose'), ()=> closeSheet('moreBackdrop'));
 onActivate($('#actCheckUpdate'), checkForUpdates);
+
+/* Cosa è il Baskin: apre il pannello informativo */
+onActivate($('#actAboutBaskin'), ()=>{ closeSheet('moreBackdrop'); openSheet('baskinInfoBackdrop'); });
+onActivate($('#baskinInfoClose'), ()=>{ closeSheet('baskinInfoBackdrop'); });
+
+/* voci disponibili solo dentro l'app Android "Cast" (window.CastBridge) */
+(function setupCastMenu(){
+  const cb = window.CastBridge;
+  if(!cb) return;
+  if(typeof cb.showConnectInfo === 'function'){
+    const b = $('#actCastConnect');
+    if(b){ b.hidden = false; onActivate(b, ()=>{ closeSheet('moreBackdrop'); try{ cb.showConnectInfo(); }catch(_){} }); }
+  }
+  if(typeof cb.openRoleSettings === 'function'){
+    const b = $('#actCastRole');
+    if(b){ b.hidden = false; onActivate(b, ()=>{ closeSheet('moreBackdrop'); try{ cb.openRoleSettings(); }catch(_){} }); }
+  }
+})();
+
 onActivate($('#actScoreColor'), toggleScoreColor);
 onActivate($('#actMute'), toggleMute);
 onActivate($('#actSettings'), ()=>{ closeSheet('moreBackdrop'); openSettings(); });

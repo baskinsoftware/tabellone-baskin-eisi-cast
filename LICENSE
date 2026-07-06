@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Componenti di terzi inclusi (tutti FOSS), con le rispettive licenze:
+
+- NanoHTTPD — BSD 3-Clause (Copyright (c) elonen, NanoHTTPD contributors)
+- ZXing "core" — Apache License 2.0 (Copyright (c) ZXing authors)
+- AndroidX (androidx.webkit) — Apache License 2.0 (Copyright (c) The Android
+  Open Source Project)
+
+I termini completi di queste licenze sono disponibili presso i rispettivi
+progetti. La PWA inclusa in app/src/main/assets/pwa/ è rilasciata dallo stesso
+autore sotto licenza MIT; i file audio in pwa/sounds/ sono in CC0 1.0
+(vedi pwa/sounds/CREDITS.txt).

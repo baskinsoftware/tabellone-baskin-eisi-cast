@@ -1,107 +1,149 @@
 # Tabellone Baskin Cast — app Android
 
-Stesse funzionalità del **Tabellone Baskin**, con in più la possibilità di
-**presentare il tabellone su un TV in sola visualizzazione** (senza comandi):
+> ⚠️ **Work in progress.** Questa versione Android (Cast) è in **sviluppo
+> attivo**: funzioni e comportamenti possono cambiare, e alcune parti non sono
+> ancora state provate su tutti i dispositivi. Per l'uso stabile e immediato c'è
+> la **PWA** (vedi *Progetti collegati*).
 
-1. **Display secondario** (HDMI, Miracast, "Trasmetti schermo"): il tabellone
-   viene mostrato sullo schermo esterno tramite la *Presentation API* di
-   Android, mentre il telefono/tablet tiene i comandi.
-2. **LAN** (browser del TV): l'app avvia un piccolo **web server** integrato;
-   dal browser della smart TV apri `http://IP-telefono:porta` e vedi il
-   tabellone a schermo intero.
+## Cos'è il Baskin
 
-È **FOSS** e compilabile con solo Gradle + AndroidX + NanoHTTPD. Non è pensata
-per F-Droid (usa NanoHTTPD da Maven Central e non applica i vincoli F-Droid),
-ma resta interamente open source.
+Il Baskin è uno sport inclusivo per progettazione, nato in Italia nei primi anni duemila, che prevede per regolamento la partecipazione di atleti di entrambi i sessi con e senza disabilità. Il regolamento del Baskin è una proprietà intellettuale di *Associazione Baskin* ed i campionati in Italia sono organizzati da *EISI - Ente Italiano Sport Inclusivi*, Ente di Promozione Paralimpica riconosciuto dal *Comitato Italiano Paralimpico*.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.0.0
-(incorpora la PWA Tabellone Baskin 1.15.0)
+Per approfondire: [baskin.it](https://baskin.it) · [eisi.it](https://eisi.it)
 
 ---
 
-## Come funziona
+## L'app
 
-- Il **WebView di controllo** carica la PWA completa (con i comandi) dagli
-  `assets/` tramite `WebViewAssetLoader` (origine sicura `https://appassets…`).
-- Ad ogni cambio di stato la PWA chiama `window.CastBridge.pushState(json)`: un
-  ponte JavaScript→nativo (`CastBridge`) che aggiorna il **web server
-  integrato** (`CastServer`, basato su NanoHTTPD).
-- Il **display** (secondario o TV) apre la stessa PWA in **modalità sola
-  visualizzazione** (`index.html?display=1`): nasconde tutti i comandi e
-  interroga `GET /state` ogni ~0,75 s. Il cronometro scorre fluido perché il
-  tempo avanza in locale tra un aggiornamento e l'altro (`running` +
-  `remainingMs`).
-- Il **display secondario** è un `WebView` dentro una `Presentation` che punta a
-  `http://127.0.0.1:porta/?display=1`: stesso identico percorso di un TV sulla
-  LAN, così i due trasporti condividono tutto il codice.
+App **unica e adattiva** per il **Baskin**: gestisce la partita (tempo, punti,
+falli, timeout) e **presenta il tabellone su un TV** in sola visualizzazione,
+senza fili, in modo semplice.
 
-Schema:
+> 📖 **[Manuale operativo completo → `MANUALE.md`](MANUALE.md)** — tutti i modi
+> d'uso, passo passo (compreso perché il *controller* deve essere Android).
+
+È **FOSS**: codice rilasciato sotto licenza **MIT** (vedi [`LICENSE`](LICENSE)).
+Compilabile con Gradle + AndroidX + NanoHTTPD + ZXing (librerie di terzi anch'esse
+FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni in
+[`LICENSE`](LICENSE)). Non applica i vincoli F‑Droid (usa NanoHTTPD/ZXing da Maven
+Central), ma resta interamente open source.
+
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.1.0
+(incorpora la PWA Tabellone Baskin 1.15.5)
+
+> ℹ️ **Doppia versione (dalla 1.2.0):** il `versionName` mostrerà sia la versione
+> del **framework** nativo sia quella della **PWA** incorporata (es.
+> `1.2.0 (PWA 1.15.6)`), leggibili dall'"info app" di Android. In `build.gradle`
+> sono definite separatamente (`frameworkVersion`, `pwaVersion`) ed esposte anche
+> come `BuildConfig.FRAMEWORK_VERSION` / `BuildConfig.PWA_VERSION`.
+
+---
+
+---
+
+## Progetti collegati
+
+Il Tabellone Baskin esiste in **due repository**, che lavorano insieme:
+
+- **PWA (web)** — repo **[`baskin-tabellone`](https://github.com/UncleDan/baskin-tabellone)**:
+  il segnapunti web, installabile e offline, ospitabile su GitHub Pages
+  (online su <https://www.uncledan.it/tabellone-baskin/>). È anche il *display*
+  via browser di questa app.
+- **App Android (Cast)** — repo **[`baskin-tabellone-cast`](https://github.com/UncleDan/baskin-tabellone-cast)** *(questo, work in progress)*:
+  incorpora la stessa PWA e aggiunge i ruoli, la scoperta di rete e la
+  presentazione su TV.
+
+Come si combinano le due versioni è spiegato nel
+**[Manuale operativo](MANUALE.md)**.
+
+---
+
+## Ruoli (app unica, adattiva)
+
+Lo stesso APK può fare da:
+
+- **Tabellone** (*controller / master*): comandi + fonte di verità. **Deve essere
+  un dispositivo Android** con questa app: fa da server sulla rete e si annuncia
+  da solo (un browser non può farlo).
+- **Schermo** (*display*): mostra il tabellone in sola visualizzazione su un TV.
+
+**Scelta del ruolo:** proposta al **primo avvio** con preselezione automatica
+(TV → *Schermo*, telefono → *Tabellone*), modificabile poi da `…` → **Ruolo
+dispositivo…** (sul controller) o **tenendo premuto** sullo schermo.
+
+## Come arriva il tabellone sul TV
+
+1. **App su chiavetta / Android TV** (consigliato): lo schermo **trova da solo**
+   il tabellone via **NSD** (mDNS) e si aggancia. *Accendi e vai.*
+2. **Browser della smart TV**: sul controller `…` → **Indirizzo / QR per la TV**;
+   sul TV apri `http://IP:porta` (o inquadra il **QR**). Nessuna app sul TV.
+3. **Display secondario** del controller stesso (USB‑C→HDMI / Miracast): il
+   tabellone appare sullo schermo esterno, i comandi restano sul telefono.
+
+## Architettura (perché non c'è grafica duplicata)
+
+Il rendering del tabellone è **sempre la stessa PWA** in modalità
+`?display=1` (una sola estetica). Cambia solo *chi tiene il server*:
 
 ```
-[ WebView controllo ]  --CastBridge.pushState-->  [ CastServer (NanoHTTPD) ]
-   (PWA con comandi)                                  |  serve /  e  /state
-                                                      |
-                        polling GET /state            |
-   [ Presentation su display esterno ] <-------------- |
-   [ Browser del TV su LAN ]           <-------------- |
-        (index.html?display=1, sola visualizzazione)
+[ Controller Android ]  --CastBridge.pushState-->  [ CastServer (NanoHTTPD) ]
+   (PWA con comandi)                                   | annuncio NSD (_baskin._tcp)
+                                                       | serve /  e  /state
+                          polling GET /state           |
+   [ Schermo: app su chiavetta/TV ]  <----------------- |   (trovato via NSD)
+   [ Schermo: browser del TV ]       <----------------- |   (indirizzo/QR)
+   [ Display secondario HDMI/Miracast ] <-------------- |   (127.0.0.1)
 ```
 
-## Uso
+## Componenti nativi
 
-- **Display secondario**: collega il telefono al TV (adattatore USB‑C→HDMI, o
-  "Trasmetti schermo"/Miracast). Appena il sistema espone un display di
-  presentazione, l'app ci mostra automaticamente il tabellone; il telefono
-  resta con i comandi.
-- **LAN**: all'avvio l'app mostra un avviso con l'indirizzo
-  `http://IP-telefono:porta` (di default porta 8080). Apri quell'indirizzo nel
-  **browser del TV** (stessa rete Wi‑Fi): comparirà il tabellone senza comandi.
-
-> Il telefono e il TV devono essere sulla **stessa rete locale**. Il traffico è
-> in chiaro (HTTP) verso la LAN: normale per un dispositivo locale.
+```
+app/src/main/java/it/uncledan/baskintabellonecast/
+├── RoleActivity.java       primo avvio: scelta ruolo + instradamento (LAUNCHER)
+├── Roles.java              modello ruoli + persistenza + rilevamento TV/telefono
+├── MainActivity.java       ruolo Tabellone: WebView comandi + server + NSD + QR
+├── DisplayActivity.java    ruolo Schermo: scoperta NSD + WebView ?display=1
+├── CastServer.java         web server NanoHTTPD (PWA + /state)
+├── CastBridge.java         ponte JS→nativo (stato, ruolo, info connessione)
+├── ScorePresentation.java  display secondario (Presentation API)
+└── QrUtil.java             QR (ZXing) per il collegamento via browser
+app/src/main/assets/pwa/    la PWA Tabellone Baskin (controllo + modalità display)
+```
 
 ## Permessi
 
-- **INTERNET**: necessario per il web server integrato (LAN) e per il display
-  secondario. L'app **non contatta server remoti**: serve solo contenuti locali.
-- Il file `res/xml/network_security_config.xml` consente il traffico HTTP in
-  chiaro verso la rete locale (necessario perché TV e display leggono via HTTP).
+- **INTERNET**: web server integrato, scoperta NSD, display secondario. Nessun
+  server remoto: solo rete locale.
+- `res/xml/network_security_config.xml`: consente HTTP in chiaro (necessario in
+  LAN). Android non permette di limitarlo a un intervallo di IP; l'app comunque
+  non contatta internet.
+
+## Compatibilità TV
+
+Il manifest dichiara `touchscreen` e `leanback` **non richiesti** e registra il
+**LEANBACK_LAUNCHER**, così l'app si installa e compare anche su **Android TV**.
+*(Per la pubblicazione su Play in sezione TV servirà un banner 320×180.)*
 
 ## Build in locale
 
 ```bash
-# APK di debug
-./gradlew assembleDebug
-# output: app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleDebug     # APK di debug non firmato
+./gradlew assembleRelease   # APK release (firmato se sono presenti le variabili keystore)
 ```
 
-Per un APK release firmato, configura un tuo keystore (vedi la documentazione
-Android su `signingConfigs`).
+## Pubblicazione dell'APK su GitHub (automatica)
 
-## Struttura (parte nativa)
+È incluso il workflow **`.github/workflows/release.yml`**: al push di un tag
+`v*` compila, **firma** e allega l'APK alla Release. Richiede questi *Secrets*
+nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
+`KEY_PASSWORD`. La chiave non entra mai nel repo.
 
-```
-app/src/main/java/it/uncledan/baskintabellonecast/
-├── MainActivity.java       WebView controllo + server + display secondario + URL LAN
-├── CastServer.java         web server NanoHTTPD (serve la PWA + /state)
-├── CastBridge.java         ponte JS→nativo (window.CastBridge.pushState)
-└── ScorePresentation.java  contenuto del display secondario (WebView ?display=1)
-app/src/main/assets/pwa/    la PWA Tabellone Baskin (controllo + modalità display)
-```
+## Verso il Play Store
 
-## Note e limiti
-
-- La modalità **sola visualizzazione** della PWA è attivata dal parametro
-  `?display=1`: nasconde play, modifica, menu, pulsanti punti/falli,
-  sirena/fischietto; mostra solo punteggi, tempo, periodo, timeout, falli/bonus,
-  possesso e nomi. In questa modalità la PWA **non modifica né salva** la partita
-  e **non registra il service worker** (è un puro visualizzatore live).
-- Restano disponibili tutte le funzioni del tabellone sul dispositivo di
-  controllo, incluso lo **Streaming BaskinCam** opzionale.
-- "Bluetooth verso il TV" non è previsto: i TV non accettano un flusso schermo
-  via Bluetooth. I trasporti supportati sono display secondario e LAN.
+- `applicationId` **immutabile**: `it.uncledan.baskintabellonecast`.
+- Cleartext HTTP consentito ma l'app è **solo LAN** (nessun traffico internet).
+- Per la sezione Android TV servirà un **banner** e gli screenshot dedicati.
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan)
-**Versione:** 1.0.0
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.1.0

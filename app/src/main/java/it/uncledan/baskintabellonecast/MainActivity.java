@@ -2,16 +2,22 @@ package it.uncledan.baskintabellonecast;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowInsets;
@@ -23,6 +29,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.webkit.WebViewAssetLoader;
@@ -49,7 +58,7 @@ import java.util.Enumeration;
  *
  * Autore: Daniele Lolli (UncleDan)
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements CastBridge.Host {
 
     private static final String APP_HOST = "appassets.androidplatform.net";
     private static final String APP_URL =
@@ -65,6 +74,9 @@ public class MainActivity extends Activity {
     private DisplayManager displayManager;
     private DisplayManager.DisplayListener displayListener;
     private ScorePresentation presentation;
+
+    private NsdManager nsd;
+    private NsdManager.RegistrationListener nsdRegListener;
 
     private final Handler main = new Handler(Looper.getMainLooper());
 
@@ -98,10 +110,9 @@ public class MainActivity extends Activity {
         s.setSupportMultipleWindows(true);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        // ponte: la PWA chiama window.CastBridge.pushState(json) ad ogni cambio
-        web.addJavascriptInterface(new CastBridge(json -> {
-            if (server != null) server.setState(json);
-        }), "CastBridge");
+        // ponte: la PWA chiama window.CastBridge.* (pushState / apri impostazioni
+        // ruolo / mostra indirizzo+QR)
+        web.addJavascriptInterface(new CastBridge(this), "CastBridge");
 
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -151,8 +162,104 @@ public class MainActivity extends Activity {
         // 3) Display secondario: mostra il tabellone sullo schermo esterno se presente
         setupSecondaryDisplay();
 
+        // 4) Annuncio sulla rete (NSD): i display nativi trovano il tabellone da soli
+        registerNsd();
+
         // mostra come raggiungere il display dalla LAN
         showLanHint();
+    }
+
+    // ---------------------------------------------------------- CastBridge.Host
+
+    @Override
+    public void onState(String json) {
+        if (server != null) server.setState(json);
+    }
+
+    @Override
+    public void onOpenRoleSettings() {
+        main.post(() -> {
+            Intent i = new Intent(this, RoleActivity.class);
+            i.putExtra(RoleActivity.EXTRA_FORCE, true);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            finish();
+        });
+    }
+
+    @Override
+    public void onShowConnectInfo() {
+        main.post(this::showConnectInfoDialog);
+    }
+
+    // ------------------------------------------------------------- NSD (master)
+
+    private void registerNsd() {
+        if (serverPort < 0) return;
+        nsd = (NsdManager) getSystemService(Context.NSD_SERVICE);
+        if (nsd == null) return;
+
+        NsdServiceInfo info = new NsdServiceInfo();
+        info.setServiceName("Tabellone Baskin");
+        info.setServiceType(DisplayActivity.SERVICE_TYPE);
+        info.setPort(serverPort);
+
+        nsdRegListener = new NsdManager.RegistrationListener() {
+            @Override public void onServiceRegistered(NsdServiceInfo info) {}
+            @Override public void onRegistrationFailed(NsdServiceInfo info, int errorCode) {}
+            @Override public void onServiceUnregistered(NsdServiceInfo info) {}
+            @Override public void onUnregistrationFailed(NsdServiceInfo info, int errorCode) {}
+        };
+        try {
+            nsd.registerService(info, NsdManager.PROTOCOL_DNS_SD, nsdRegListener);
+        } catch (Exception ignored) {}
+    }
+
+    private void unregisterNsd() {
+        try { if (nsd != null && nsdRegListener != null) nsd.unregisterService(nsdRegListener); }
+        catch (Exception ignored) {}
+        nsdRegListener = null;
+    }
+
+    // --------------------------------------------------- Dialog indirizzo + QR
+
+    private void showConnectInfoDialog() {
+        String ip = localIpAddress();
+        if (ip == null || serverPort < 0) {
+            toast("Nessuna rete locale disponibile");
+            return;
+        }
+        final String url = "http://" + ip + ":" + serverPort + "/?display=1";
+
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER_HORIZONTAL);
+        int pad = Math.round(20 * getResources().getDisplayMetrics().density);
+        box.setPadding(pad, pad, pad, pad);
+
+        TextView tv = new TextView(this);
+        tv.setText("Sul browser del TV apri:\n" + url);
+        tv.setTextSize(16);
+        tv.setGravity(Gravity.CENTER);
+        box.addView(tv);
+
+        int qrPx = Math.round(240 * getResources().getDisplayMetrics().density);
+        Bitmap qr = QrUtil.encode(url, qrPx);
+        if (qr != null) {
+            ImageView iv = new ImageView(this);
+            iv.setImageBitmap(qr);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(qrPx, qrPx);
+            lp.topMargin = pad;
+            iv.setLayoutParams(lp);
+            iv.setBackgroundColor(Color.WHITE);
+            box.addView(iv);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Collega un TV via browser")
+                .setView(box)
+                .setPositiveButton("Chiudi", null)
+                .show();
     }
 
     // ---------------------------------------------------------------- Server
@@ -330,6 +437,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         dismissPresentation();
+        unregisterNsd();
         if (displayManager != null && displayListener != null) {
             displayManager.unregisterDisplayListener(displayListener);
         }

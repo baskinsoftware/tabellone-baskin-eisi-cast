@@ -4,28 +4,41 @@ import android.webkit.JavascriptInterface;
 
 /**
  * Ponte JavaScript ⇄ nativo esposto al WebView di controllo come
- * "window.CastBridge". La PWA, ad ogni cambio di stato, chiama
- * CastBridge.pushState(json); il nativo aggiorna il web server integrato,
- * da cui il display secondario e i browser dei TV leggono in polling.
+ * "window.CastBridge".
+ *
+ *  - pushState(json): la PWA invia lo stato ad ogni cambio; il nativo aggiorna
+ *    il web server integrato (da cui display e TV leggono).
+ *  - openRoleSettings(): apre la scelta del ruolo (voce nelle impostazioni PWA).
+ *  - showConnectInfo(): mostra indirizzo + QR per collegare un TV via browser.
  *
  * Autore: Daniele Lolli (UncleDan)
  */
 public class CastBridge {
 
-    public interface Listener {
+    public interface Host {
         void onState(String json);
+        void onOpenRoleSettings();
+        void onShowConnectInfo();
     }
 
-    private final Listener listener;
+    private final Host host;
 
-    public CastBridge(Listener listener) {
-        this.listener = listener;
+    public CastBridge(Host host) {
+        this.host = host;
     }
 
     @JavascriptInterface
     public void pushState(String json) {
-        if (listener != null) {
-            listener.onState(json);
-        }
+        if (host != null) host.onState(json);
+    }
+
+    @JavascriptInterface
+    public void openRoleSettings() {
+        if (host != null) host.onOpenRoleSettings();
+    }
+
+    @JavascriptInterface
+    public void showConnectInfo() {
+        if (host != null) host.onShowConnectInfo();
     }
 }
