@@ -1,14 +1,16 @@
-name: Beta APK (debug)
+name: Beta APK (unsigned)
 
-# Compila un APK di DEBUG con suffisso "-beta", senza bisogno di keystore né
-# segreti (il debug è firmato con la chiave di debug di Android).
+# Compila un APK di RELEASE NON FIRMATO, senza bisogno di keystore né segreti.
+# Il buildType "release", in assenza della variabile d'ambiente KEYSTORE_FILE,
+# non applica alcuna firma: Gradle produce "app-release-unsigned.apk".
 #
 # Si avvia:
-#  - a mano dal tab "Actions" → "Beta APK (debug)" → "Run workflow";
+#  - a mano dal tab "Actions" → "Beta APK (unsigned)" → "Run workflow";
 #  - automaticamente ad ogni push sul branch "beta".
 #
-# L'APK non viene pubblicato in una Release: resta come "artifact" scaricabile
-# dalla pagina del run (adatto ai test rapidi).
+# L'APK resta come "artifact" scaricabile dalla pagina del run (non pubblicato
+# in una Release). ATTENZIONE: essendo NON firmato, va firmato con apksigner
+# prima di poterlo installare su un dispositivo.
 
 on:
   workflow_dispatch:
@@ -32,19 +34,20 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK debug (-beta)
+      - name: Build APK release NON firmato
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon assembleDebug
+          ./gradlew --no-daemon assembleRelease
 
       - name: Prepara l'artifact
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/debug/app-debug.apk \
-             "out/TabelloneBaskinCast-beta-${GITHUB_SHA::7}.apk"
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          cp app/build/outputs/apk/release/app-release-unsigned.apk \
+             "out/TabelloneBaskinCast-beta-${GITHUB_SHA::7}-unsigned.apk"
 
       - name: Carica l'APK beta come artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TabelloneBaskinCast-beta
+          name: TabelloneBaskinCast-beta-${{ env.SHORT_SHA }}-unsigned
           path: out/*.apk
