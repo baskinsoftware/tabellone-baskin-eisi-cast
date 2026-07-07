@@ -163,9 +163,9 @@ body.mode-edit #btnPlay{ opacity:.35; pointer-events:none; }
 .team-name{
   font-weight: 800;
   font-size: clamp(33px, 9vh, 96px);
-  line-height: 1.05;
+  line-height: 1.2;
   text-align: center;
-  padding: .05em .4em;
+  padding: .05em .4em .12em;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -616,4 +616,30 @@ body.mode-edit .brand-logo{ display:none; }
 /* su schermi molto bassi (landscape stretto) i loghi si nascondono */
 @media (max-height: 340px){
   .brand-logo{ display:none; }
+}
+
+/* =====================================================================
+   LOGHI: visibilità e impostazioni (modalità Baskin/FIBA/Personalizza)
+   ===================================================================== */
+/* i loghi si nascondono quando non sono ammessi (governato dal JS: solo
+   con DEFAULT_SHOW_LOGOS true e preset Baskin) */
+body.hide-logos .brand-logo{ display: none !important; }
+
+/* i tre pulsanti modalità stanno su una riga (con wrap se serve) */
+.sheet-row-3 > *{ flex: 1 1 92px; }
+/* pulsante modalità attivo */
+.sheet-item.is-active{
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+  filter: brightness(1.05);
+}
+/* campi di gara bloccati (modalità Baskin/FIBA): visibili ma non modificabili */
+#disciplineFields.fields-locked{ opacity: .55; }
+#disciplineFields.fields-locked .field{ cursor: default; }
+
+/* disclaimer marchi nel pannello "Cosa è il Baskin" */
+.sheet-text.disclaimer{
+  font-size: 0.82em;
+  color: #9a9a9a;
+  margin-top: 0.6em;
 }

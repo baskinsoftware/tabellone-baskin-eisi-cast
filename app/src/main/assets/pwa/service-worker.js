@@ -1,9 +1,20 @@
 /* =====================================================================
    Service worker - Tabellone Baskin
    Cache-first per il funzionamento completamente offline.
-   Aggiornare CACHE_NAME ad ogni rilascio per forzare l'aggiornamento.
+
+   Se l'app è aperta nel browser normale (non installata), app.js chiede
+   l'attivazione immediata di una nuova versione trovata tramite il
+   messaggio SKIP_WAITING qui sotto, poi ricarica la pagina.
+
+   Se l'app è installata come PWA (standalone), app.js NON invia questo
+   messaggio: il service worker resta quello installato finché l'utente
+   non disinstalla e reinstalla l'app (vedi "Verifica aggiornamenti" nelle
+   impostazioni), per non interrompere una partita con un reload a sorpresa.
+
+   Aggiornare CACHE_NAME ad ogni rilascio: serve sia a invalidare la vecchia
+   cache sia a far dichiarare al file la propria versione.
    ===================================================================== */
-const CACHE_NAME = 'baskin-tabellone-v1.15.5';
+const CACHE_NAME = 'baskin-tabellone-v1.16.5';
 
 const ASSETS = [
   './',
@@ -20,7 +31,8 @@ const ASSETS = [
   './icons/logos/logo-eisi.svg'
 ];
 
-/* messaggio dall'app: attiva subito la nuova versione in attesa */
+/* messaggio dalla pagina (solo se non installata come PWA): attiva subito
+   la nuova versione in attesa */
 self.addEventListener('message', (event)=>{
   if(event.data && event.data.type === 'SKIP_WAITING'){ self.skipWaiting(); }
 });
@@ -28,10 +40,8 @@ self.addEventListener('message', (event)=>{
 self.addEventListener('install', (event)=>{
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
-      // 'reload' forza il prelievo dalla rete (ignora la cache HTTP del browser),
-      // così la nuova versione NON viene popolata con i file vecchi: niente hard reset
       cache.addAll(ASSETS.map(u => new Request(u, { cache: 'reload' })))
-    ).then(()=> self.skipWaiting())
+    )
   );
 });
 
