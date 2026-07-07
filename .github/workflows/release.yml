@@ -52,21 +52,13 @@ jobs:
         run: |
           mkdir -p out
           cp app/build/outputs/apk/release/app-release.apk \
-             "out/TabelloneBaskinCast-${GITHUB_REF_NAME}.apk"
-
-      - name: Build APK debug (-beta)
-        run: ./gradlew --no-daemon assembleDebug
-
-      - name: Rinomina APK debug con suffisso -beta
-        run: |
-          cp app/build/outputs/apk/debug/app-debug.apk \
-             "out/TabelloneBaskinCast-${GITHUB_REF_NAME}-beta.apk"
+             "out/TabelloneBaskinCast-${GITHUB_REF_NAME}-signed.apk"
 
       - name: Pulisci keystore
         if: always()
         run: rm -f "$RUNNER_TEMP/keystore.jks"
 
-      - name: Allega gli APK alla Release
+      - name: Allega l'APK alla Release
         uses: softprops/action-gh-release@v2
         with:
           files: out/*.apk
