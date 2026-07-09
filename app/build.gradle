@@ -10,18 +10,18 @@ android {
     // Convenzione (dalla 1.1.0 in poi): il versionName mostra ENTRAMBE, così
     // dall'"info app" di Android si legge sia la versione del framework sia
     // quella della PWA. Aggiornare 'pwaVersion' ad ogni re-sync degli assets.
-    def frameworkVersion = "1.1.1"
-    def pwaVersion = "1.16.5"
-    // versionName composto ATTIVO: es. "1.1.1 (PWA 1.16.5)"
+    def frameworkVersion = "1.1.2"
+    def pwaVersion = "1.17.0"
+    // versionName composto ATTIVO: es. "1.1.2 (PWA 1.17.0)"
 
     defaultConfig {
         applicationId "it.uncledan.baskintabellonecast"
         minSdk 21
         targetSdk 34
-        // 10101 = framework 1.1.1 (schema major_minor_patch: 1_01_01). Il re-sync
-        // della PWA a 1.16.5 comporta il bump di patch del framework 1.1.0 -> 1.1.1,
-        // così l'APK si installa come aggiornamento. Prossimo minor 1.2.0 -> 10200.
-        versionCode 10101
+        // 10102 = framework 1.1.2 (schema major_minor_patch: 1_01_02). Ogni re-sync
+        // della PWA comporta un bump di patch del framework (1.1.1 -> 1.1.2), così
+        // l'APK si installa come aggiornamento. Prossimo minor 1.2.0 -> 10200.
+        versionCode 10102
         versionName "${frameworkVersion} (PWA ${pwaVersion})"
 
         // esposte al codice/BuildConfig per un'eventuale schermata "Info"
