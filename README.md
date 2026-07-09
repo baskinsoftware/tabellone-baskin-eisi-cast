@@ -28,12 +28,12 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 [`LICENSE`](LICENSE)). Non applica i vincoli F‑Droid (usa NanoHTTPD/ZXing da Maven
 Central), ma resta interamente open source.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.1.1 (PWA 1.16.5)
-(framework 1.1.1 · incorpora la PWA Tabellone Baskin 1.16.5)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.1.3 (PWA 1.17.1)
+(framework 1.1.3 · incorpora la PWA Tabellone Baskin 1.17.1)
 
 > ℹ️ **Doppia versione (attiva dalla 1.1.0):** il `versionName` mostra sia la
 > versione del **framework** nativo sia quella della **PWA** incorporata (es.
-> `1.1.1 (PWA 1.16.5)`), leggibili dall'"info app" di Android. In `build.gradle`
+> `1.1.3 (PWA 1.17.1)`), leggibili dall'"info app" di Android. In `build.gradle`
 > sono definite separatamente (`frameworkVersion`, `pwaVersion`) ed esposte anche
 > come `BuildConfig.FRAMEWORK_VERSION` / `BuildConfig.PWA_VERSION`. Ad ogni
 > re-sync degli asset si aggiorna `pwaVersion` e si incrementa il `versionCode`.
@@ -147,4 +147,4 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.1.1 (PWA 1.16.5)
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.1.3 (PWA 1.17.1)

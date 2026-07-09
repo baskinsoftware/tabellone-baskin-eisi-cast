@@ -206,13 +206,14 @@
       <h2>Informazioni</h2>
       <div class="about">
         <p class="about-title">Tabellone Baskin</p>
-        <p class="about-meta">Versione <span id="aboutVersion">1.16.5</span> — Daniele Lolli (UncleDan)</p>
+        <p class="about-meta">Versione <span id="aboutVersion">1.17.1</span> — Daniele Lolli (UncleDan)</p>
       </div>
-      <!-- verdi: installazione / aggiornamenti / sorgenti -->
+      <!-- verdi: installazione / info / sorgenti / segnalazioni / aggiornamenti -->
       <button class="sheet-item green" id="actInstall" type="button" hidden>Installa app</button>
-      <button class="sheet-item green" id="actCheckUpdate" type="button">Verifica aggiornamenti</button>
-      <a class="sheet-item sheet-link green" id="actRepo" href="https://github.com/UncleDan/baskin-tabellone" target="_blank" rel="noopener noreferrer">Codice sorgente su GitHub ↗</a>
       <button class="sheet-item green" id="actAboutBaskin" type="button">Cosa è il Baskin</button>
+      <a class="sheet-item sheet-link green" id="actRepo" href="https://github.com/UncleDan/baskin-tabellone" target="_blank" rel="noopener noreferrer">Codice sorgente su GitHub ↗</a>
+      <a class="sheet-item sheet-link green" id="actIssues" href="https://github.com/UncleDan/baskin-tabellone/issues" target="_blank" rel="noopener noreferrer">Segnalazioni ↗</a>
+      <button class="sheet-item green" id="actCheckUpdate" type="button">Verifica aggiornamenti</button>
       <!-- solo nell'app Cast (visibili se presente window.CastBridge) -->
       <button class="sheet-item green" id="actCastConnect" type="button" hidden>Indirizzo / QR per la TV</button>
       <button class="sheet-item green" id="actCastRole" type="button" hidden>Ruolo dispositivo…</button>
@@ -235,8 +236,8 @@
       <h2>Cosa è il Baskin</h2>
       <p class="sheet-text">Il Baskin è uno sport fondato sul basket, inclusivo per progettazione, che prevede per regolamento la partecipazione simultanea degli atleti senza divisione in categorie grazie ad un sistema basato sui ruoli in campo: atleti di entrambi i sessi, con e senza disabilità, con disabilità fisiche e/o cognitive giocano insieme sullo stesso campo la stessa partita. Il regolamento del Baskin è una proprietà intellettuale di <em>Associazione Baskin</em> ed i campionati in Italia sono organizzati da <em>EISI - Ente Italiano Sport Inclusivi</em>, Ente di Promozione Paralimpica riconosciuto dal <em>Comitato Italiano Paralimpico</em>.</p>
       <div class="sheet-row">
-        <a class="sheet-item green" href="https://baskin.it" target="_blank" rel="noopener noreferrer">baskin.it ↗</a>
         <a class="sheet-item green" href="https://eisi.it" target="_blank" rel="noopener noreferrer">eisi.it ↗</a>
+        <a class="sheet-item green" href="https://baskin.it" target="_blank" rel="noopener noreferrer">baskin.it ↗</a>
       </div>
       <p class="sheet-text disclaimer">I loghi «EISI» e «Baskin» sono marchi registrati rispettivamente da Ente Italiano Sport Inclusivi e Associazione Baskin.</p>
       <button class="sheet-close" id="baskinInfoClose" type="button">Chiudi</button>
@@ -248,10 +249,9 @@
     <div class="sheet" role="dialog" aria-label="Impostazioni partita">
       <h2>Impostazioni partita</h2>
 
-      <!-- Modalità: Baskin / Basket FIBA / Personalizza -->
-      <div class="sheet-row sheet-row-3">
+      <!-- Modalità: Baskin / Personalizza -->
+      <div class="sheet-row sheet-row-2">
         <button class="sheet-item green" id="presetBaskin" type="button">Baskin</button>
-        <button class="sheet-item green" id="presetBasket" type="button">Basket FIBA</button>
         <button class="sheet-item green" id="presetCustom" type="button">Personalizza</button>
       </div>
 
@@ -278,6 +278,13 @@
       <label class="field">
         <span>Timeout per supplementare</span>
         <input type="number" id="cfgTimeoutsOt" min="0" max="9" inputmode="numeric" />
+      </label>
+      <label class="field">
+        <span>Logica timeout</span>
+        <select id="cfgTimeoutMode">
+          <option value="baskin">Baskin (riporto all'indietro)</option>
+          <option value="basket">Basket (monte per tempo)</option>
+        </select>
       </label>
       <label class="field">
         <span>Modalità bonus</span>
