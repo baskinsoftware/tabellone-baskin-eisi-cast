@@ -5,7 +5,7 @@
    ===================================================================== */
 'use strict';
 
-const APP_VERSION = '1.17.0';
+const APP_VERSION = '1.17.1';
 const STORE_KEY = 'baskin-tabellone-v1';
 
 /* Modalità "sola visualizzazione": attivata con ?display=1 nell'URL.
@@ -1418,6 +1418,14 @@ onActivate($('#actQuit'), ()=>{
   if(repo){
     repo.href = REPO_URL;
     repo.addEventListener('click', ()=> closeSheet('moreBackdrop'));
+  }
+}
+/* link alle segnalazioni (Issues GitHub, apre nel browser) */
+{
+  const issues = $('#actIssues');
+  if(issues){
+    issues.href = REPO_URL + '/issues';
+    issues.addEventListener('click', ()=> closeSheet('moreBackdrop'));
   }
 }
 onActivate($('#actWake'), toggleWake);
