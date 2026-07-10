@@ -56,11 +56,14 @@ gap: 4px; gap: clamp(4px, 1vh, 14px);
   gap: var(--gap);
   min-height: 0;
 }
-.clock-controls{ justify-self: start; display:flex; align-items:center; gap: var(--gap); }
+.clock-controls{ justify-self: start; display:flex; align-items:center; }
+.clock-controls > * + *{ margin-left: 6px; margin-left: clamp(6px, 1.2vw, 18px); }
 .topbar-actions{ justify-self: end; display:flex; align-items:center; gap: var(--gap); }
 /* timer + periodo come gruppo centrale; il periodo è vicino al crono
-   (circa 0,75 della larghezza di una cifra ≈ 0,42 della sua altezza) */
-.clock-period{ justify-self: center; display:flex; align-items:center;gap: 30px; gap: clamp(30px, 8vh, 84px); }
+   (circa 0,75 della larghezza di una cifra ≈ 0,42 della sua altezza).
+   2 figli fissi: margine sul secondo invece di "gap" (più affidabile). */
+.clock-period{ justify-self: center; display:flex; align-items:center; }
+.timer + .period{ margin-left: 30px; margin-left: clamp(30px, 8vh, 84px); }
 
 #btnNext{ display:none; }
 body.mode-game.end-of-period #btnNext{ display:grid; }
@@ -85,15 +88,18 @@ body[data-running="true"] #btnPlay .ico-pause{ display:block; }
 /* in modalità impostazioni il play è presente ma bloccato */
 body.mode-edit #btnPlay{ opacity:.35; pointer-events:none; }
 
-/* periodo: cifra a LED bianca + spie ° (sopra) / TS (sotto) */
+/* periodo: cifra a LED bianca + spie ° (sopra) / TS (sotto).
+   Spaziatura tramite margine sul secondo figlio (non "gap"): questo elemento
+   ha sempre esattamente 2 figli fissi, quindi il margine è più affidabile
+   del fallback JS su flex-gap e funziona identico su ogni browser. */
 .period{
   display: flex;
   align-items: center;
-gap: 4px; gap: clamp(4px, 1vh, 12px);
   padding: .05em .25em;
   line-height: 1;
 }
 .period-num{ color: #fff; display:flex; }
+.period-num + .period-ind{ margin-left: 4px; margin-left: clamp(4px, 1vh, 12px); }
 /* la cifra del periodo è alta il 75% di quella del cronometro */
 .period-num .seg-digit{height: 57px; height: clamp(57px, 15vh, 155px); }
 .period-num .seg{ fill: currentColor; }
@@ -104,9 +110,9 @@ gap: 4px; gap: clamp(4px, 1vh, 12px);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-gap: 3px; gap: clamp(3px, 0.8vh, 9px);
 }
 .ind-deg{height: 18px; height: clamp(18px, 5vh, 48px); width:auto; color:#fff; opacity: var(--dimseg); }
+.ind-deg + .ind-ts{ margin-top: 3px; margin-top: clamp(3px, 0.8vh, 9px); }
 .ind-ts{
   font-weight: 900;
 font-size: 14px; font-size: clamp(14px, 4vh, 40px);
@@ -232,7 +238,18 @@ height: 10px; height: clamp(10px, 2.1vh, 22px);
 gap: 2px; gap: clamp(2px, .8vh, 10px);
 padding-bottom: 2px; padding-bottom: clamp(2px,1vh,12px);
 }
-.fouls-head{ display:flex; align-items:center;gap: 10px; gap: clamp(10px,2.4vw,28px); }
+/* 5 figli fissi sempre visibili insieme (logo, bonus, etichetta, bonus, logo).
+   I loghi hanno già un proprio margine (.brand-logo-eisi/.brand-logo-baskin):
+   qui si aggiunge margine SOLO agli elementi centrali, così si somma al
+   margine dei loghi invece di sovrascriverlo (stessa proprietà, stesso
+   elemento -> l'ultima dichiarazione vincerebbe, non si sommerebbe). */
+.fouls-head{ display:flex; align-items:center; }
+.fouls-head > .bonus-dot.left,
+.fouls-head > .fouls-label{ margin-left: 10px; margin-left: clamp(10px,2.4vw,28px); }
+.fouls-head > .bonus-dot.right{
+  margin-left: 10px; margin-left: clamp(10px,2.4vw,28px);
+  margin-right: 10px; margin-right: clamp(10px,2.4vw,28px);
+}
 .fouls-label{ font-weight: 800;font-size: 20px; font-size: clamp(20px, 4.6vh, 46px); }
 /* bonus a pallini (uno per squadra): spento = anello tenue, acceso = rosso pieno */
 .bonus-dot{
@@ -258,15 +275,17 @@ body.auto-bonus .fouls-label::after{
 body.auto-bonus .bonus-dot.active{ animation: bonusPulse 1s ease-in-out infinite; }
 @keyframes bonusPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
 
-/* ---- Possesso alternato (sopra ai falli) ---- */
+/* ---- Possesso alternato (sopra ai falli) ----
+   3 figli fissi sempre visibili insieme: margine incondizionato invece di
+   "gap" (più affidabile di gap+JS su motori datati). */
 .possession{
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-gap: 10px; gap: clamp(10px, 2.4vw, 28px);
 padding-top: 2px; padding-top: clamp(2px, .8vh, 10px);
 }
+.possession > * + *{ margin-left: 10px; margin-left: clamp(10px, 2.4vw, 28px); }
 .possession[hidden]{ display:none; }
 .poss-label{ font-weight: 800;font-size: 15px; font-size: clamp(15px, 3.4vh, 32px); letter-spacing:.02em; }
 .poss-arrow{
@@ -306,8 +325,9 @@ font-size: 20px; font-size: clamp(20px, 3.6vh, 44px);
 right: 10px; right: clamp(10px, 2vw, 34px);
 bottom: 8px; bottom: clamp(8px, 1.6vh, 22px);
   display: flex;
-  gap: var(--gap);
 }
+/* 2 pulsanti fissi (sirena/fischietto): margine incondizionato invece di "gap" */
+.corner-actions > * + *{ margin-left: 6px; margin-left: clamp(6px, 1.2vw, 18px); }
 .corner-actions.left{
   right: auto;
 left: 10px; left: clamp(10px, 2vw, 34px);
@@ -433,10 +453,12 @@ a.sheet-link{ display:block; text-decoration:none; }
 .field.switch input{ width:24px; height:24px; }
 
 /* editor tempo */
-/* rotori (picker a rotella) */
-.rotors{ display:flex; align-items:flex-start; justify-content:center; gap:14px; padding:6px 0; }
+/* rotori (picker a rotella): 3 figli fissi (min/sec/dec), margine incondizionato invece di "gap" */
+.rotors{ display:flex; align-items:flex-start; justify-content:center; padding:6px 0; }
+.rotors > * + *{ margin-left: 14px; }
 .time-colon{ font-size:40px; font-weight:800; align-self:flex-start; margin-top:48px; }
-.rotor-wrap{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.rotor-wrap{ position:relative; display:flex; flex-direction:column; align-items:center; }
+.rotor-wrap > * + *{ margin-top: 6px; }
 .rotor-wrap small{ color:#aaa; font-weight:600; }
 /* banda centrale di selezione (slot centrale = 44px, dopo 44px di padding) */
 .rotor-wrap::before{
@@ -641,27 +663,18 @@ height: 60px; height: clamp(60px, 12vh, 123px);      /* +150% rispetto a prima *
    Tecnica "lobotomized owl": margine su ogni figlio tranne il primo.
    ===================================================================== */
 /* --- contenitori in riga (margin-left) --- */
-body.no-flex-gap .clock-controls > * + *,
-body.no-flex-gap .topbar-actions > * + *,
-body.no-flex-gap .corner-actions  > * + *{ margin-left: var(--gap); }
-body.no-flex-gap .clock-period > * + *{ margin-left: 30px; }
-body.no-flex-gap .period       > * + *{ margin-left: 4px; }
+body.no-flex-gap .topbar-actions > * + *{ margin-left: var(--gap); }
 body.no-flex-gap .score        > * + *,
 body.no-flex-gap .foul-num     > * + *,
 body.no-flex-gap .timer        > * + *{ margin-left: .12em; }
 body.no-flex-gap .timeouts     > * + *{ margin-left: 5px; }
-body.no-flex-gap .fouls-head   > * + *,
-body.no-flex-gap .possession   > * + *,
 body.no-flex-gap .sheet-row    > * + *{ margin-left: 10px; }
 body.no-flex-gap .fouls-body   > * + *{ margin-left: 8px; }
 body.no-flex-gap .field        > * + *{ margin-left: 12px; }
-body.no-flex-gap .rotors       > * + *{ margin-left: 14px; }
 /* --- contenitori in colonna (margin-top) --- */
 body.no-flex-gap .board        > * + *,
 body.no-flex-gap .team         > * + *{ margin-top: 4px; }
-body.no-flex-gap .period-ind   > * + *{ margin-top: 3px; }
-body.no-flex-gap .side-buttons > * + *,
-body.no-flex-gap .rotor-wrap   > * + *{ margin-top: 6px; }
+body.no-flex-gap .side-buttons > * + *{ margin-top: 6px; }
 body.no-flex-gap .fouls        > * + *{ margin-top: 2px; }
 body.no-flex-gap .sheet        > * + *{ margin-top: 12px; }
 body.no-flex-gap #rotateNotice > * + *{ margin-top: 14px; }
