@@ -1,5 +1,5 @@
 /* =====================================================================
-   Tabellone Baskin - logica applicativa
+   Tabellone Baskin EISI - logica applicativa
    Autore: Daniele Lolli (UncleDan)
    PWA offline, due schermate: principale e impostazioni.
    ===================================================================== */
@@ -15,7 +15,7 @@ const STORE_KEY = 'baskin-tabellone-v1';
 const DISPLAY_MODE = (()=>{ try{ return new URLSearchParams(location.search).get('display') === '1'; }catch(_){ return false; } })();
 
 /* Repository del codice sorgente (modifica l'URL se cambi repo) */
-const REPO_URL = 'https://github.com/UncleDan/baskin-tabellone';
+const REPO_URL = 'https://github.com/UncleDan/tabellone-baskin-eisi';
 
 /* =====================================================================
    >>> LOGHI EISI/BASKIN: default per la pubblicazione <<<
@@ -1263,13 +1263,13 @@ async function checkForUpdates(){
     return;
   }
 
-  const activeCacheName = `baskin-tabellone-v${APP_VERSION}`;
+  const activeCacheName = `tabellone-baskin-eisi-v${APP_VERSION}`;
   if(!remoteCacheName){
     toast('Impossibile controllare gli aggiornamenti');
     return;
   }
   if(remoteCacheName !== activeCacheName){
-    const remoteVersion = remoteCacheName.replace('baskin-tabellone-v', '');
+    const remoteVersion = remoteCacheName.replace('tabellone-baskin-eisi-v', '');
     toast(`Nuova versione disponibile (${remoteVersion}): disinstalla e reinstalla l'app per aggiornare`);
     return;
   }

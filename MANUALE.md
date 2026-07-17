@@ -19,7 +19,7 @@ si integrano:
   (online: <https://www.uncledan.it/tabellone-baskin/>). Da sola mostra il
   tabellone su **uno** schermo. In modalità `?display=1` fa da **schermo (display)
   via browser** per l'app.
-- **App Android — "Cast"** — repo **[`baskin-tabellone-cast`](https://github.com/UncleDan/baskin-tabellone-cast)**
+- **App Android — "Cast"** — repo **[`tabellone-baskin-cast`](https://github.com/UncleDan/tabellone-baskin-cast)**
   *(work in progress)*. Incorpora **la stessa** PWA e aggiunge i ruoli, la
   scoperta di rete (NSD), il web server e la presentazione su TV.
 

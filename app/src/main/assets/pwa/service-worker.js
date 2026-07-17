@@ -1,5 +1,5 @@
 /* =====================================================================
-   Service worker - Tabellone Baskin
+   Service worker - Tabellone Baskin EISI
    Cache-first per il funzionamento completamente offline.
 
    Se l'app è aperta nel browser normale (non installata), app.js chiede

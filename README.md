@@ -50,7 +50,7 @@ Il Tabellone Baskin esiste in **due repository**, che lavorano insieme:
   il segnapunti web, installabile e offline, ospitabile su GitHub Pages
   (online su <https://www.uncledan.it/tabellone-baskin/>). È anche il *display*
   via browser di questa app.
-- **App Android (Cast)** — repo **[`baskin-tabellone-cast`](https://github.com/UncleDan/baskin-tabellone-cast)** *(questo, work in progress)*:
+- **App Android (Cast)** — repo **[`tabellone-baskin-cast`](https://github.com/UncleDan/tabellone-baskin-cast)** *(questo, work in progress)*:
   incorpora la stessa PWA e aggiunge i ruoli, la scoperta di rete e la
   presentazione su TV.
 
