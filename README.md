@@ -148,3 +148,5 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 ---
 
 **Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.1.6 (PWA 1.17.7)
+
+#### Fix wrong merge
