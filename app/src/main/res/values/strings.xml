@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tabellone Baskin Cast</string>
+    <string name="app_name">Tabellone Baskin EISI (Cast)</string>
+
+    <!-- RoleActivity: scelta ruolo dispositivo -->
+    <string name="role_title">Ruolo di questo dispositivo</string>
+    <string name="role_subtitle">Scegli come usare questo dispositivo. Potrai cambiarlo in seguito dalle impostazioni.</string>
+    <string name="role_master_label">Tabellone (comandi)</string>
+    <string name="role_master_desc">Questo dispositivo gestisce la partita e trasmette il tabellone.</string>
+    <string name="role_display_label">Schermo (solo visualizzazione)</string>
+    <string name="role_display_desc">Questo dispositivo mostra il tabellone su un TV, senza comandi.</string>
+    <string name="role_auto_label">Automatico</string>
+    <string name="role_auto_desc">Decide ad ogni avvio in base al dispositivo (TV o telefono).</string>
+    <string name="role_continue">Continua</string>
+
+    <!-- DisplayActivity: ricerca e connessione al tabellone -->
+    <string name="display_searching">Ricerca del tabellone sulla rete…</string>
+    <string name="display_not_found">Tabellone non trovato automaticamente.\nTieni premuto per opzioni, oppure inserisci l\'indirizzo.</string>
+    <string name="display_manual_host_title">Indirizzo del tabellone</string>
+    <string name="display_manual_host_message">Inserisci IP:porta mostrato dal tabellone.</string>
+    <string name="display_connect">Connetti</string>
+    <string name="display_continue_search">Continua ricerca</string>
+
+    <!-- MainActivity: connessione TV via browser -->
+    <string name="main_no_network">Nessuna rete locale disponibile</string>
+    <string name="main_external_display">Tabellone sul display esterno</string>
+    <string name="main_lan_hint_url">TV via LAN: http://%1$s:%2$d</string>
+    <string name="main_lan_hint_port">Display LAN attivo sulla porta %1$d</string>
+    <string name="main_open_on_tv">Sul browser del TV apri:\n%1$s</string>
+    <string name="main_connect_tv_title">Collega un TV via browser</string>
+    <string name="main_close">Chiudi</string>
 </resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tabellone Baskin EISI (Cast)</string>
+
+    <!-- RoleActivity: device role selection -->
+    <string name="role_title">This device\'s role</string>
+    <string name="role_subtitle">Choose how to use this device. You can change it later from settings.</string>
+    <string name="role_master_label">Scoreboard (controls)</string>
+    <string name="role_master_desc">This device runs the game and broadcasts the scoreboard.</string>
+    <string name="role_display_label">Screen (display only)</string>
+    <string name="role_display_desc">This device shows the scoreboard on a TV, with no controls.</string>
+    <string name="role_auto_label">Automatic</string>
+    <string name="role_auto_desc">Decides at each startup based on the device (TV or phone).</string>
+    <string name="role_continue">Continue</string>
+
+    <!-- DisplayActivity: finding and connecting to the scoreboard -->
+    <string name="display_searching">Searching for the scoreboard on the network…</string>
+    <string name="display_not_found">Scoreboard not found automatically.\nPress and hold for options, or enter the address.</string>
+    <string name="display_manual_host_title">Scoreboard address</string>
+    <string name="display_manual_host_message">Enter the IP:port shown by the scoreboard.</string>
+    <string name="display_connect">Connect</string>
+    <string name="display_continue_search">Keep searching</string>
+
+    <!-- MainActivity: connecting a TV via browser -->
+    <string name="main_no_network">No local network available</string>
+    <string name="main_external_display">Scoreboard on external display</string>
+    <string name="main_lan_hint_url">TV via LAN: http://%1$s:%2$d</string>
+    <string name="main_lan_hint_port">LAN display active on port %1$d</string>
+    <string name="main_open_on_tv">On the TV browser, open:\n%1$s</string>
+    <string name="main_connect_tv_title">Connect a TV via browser</string>
+    <string name="main_close">Close</string>
+</resources>
