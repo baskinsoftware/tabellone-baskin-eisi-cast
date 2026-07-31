@@ -43,7 +43,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 /**
- * "Tabellone Baskin Cast" — stesse funzionalità del Tabellone Baskin, con in
+ * "Tabellone Baskin EISI (Cast)" — stesse funzionalità del Tabellone Baskin, con in
  * più la presentazione del tabellone su un TV, in sola visualizzazione, via:
  *
  *  1) Display secondario (HDMI / Miracast / "Trasmetti schermo"): un
@@ -226,7 +226,7 @@ public class MainActivity extends Activity implements CastBridge.Host {
     private void showConnectInfoDialog() {
         String ip = localIpAddress();
         if (ip == null || serverPort < 0) {
-            toast("Nessuna rete locale disponibile");
+            toast(getString(R.string.main_no_network));
             return;
         }
         final String url = "http://" + ip + ":" + serverPort + "/?display=1";
@@ -238,7 +238,7 @@ public class MainActivity extends Activity implements CastBridge.Host {
         box.setPadding(pad, pad, pad, pad);
 
         TextView tv = new TextView(this);
-        tv.setText("Sul browser del TV apri:\n" + url);
+        tv.setText(getString(R.string.main_open_on_tv, url));
         tv.setTextSize(16);
         tv.setGravity(Gravity.CENTER);
         box.addView(tv);
@@ -256,9 +256,9 @@ public class MainActivity extends Activity implements CastBridge.Host {
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Collega un TV via browser")
+                .setTitle(R.string.main_connect_tv_title)
                 .setView(box)
-                .setPositiveButton("Chiudi", null)
+                .setPositiveButton(R.string.main_close, null)
                 .show();
     }
 
@@ -316,7 +316,7 @@ public class MainActivity extends Activity implements CastBridge.Host {
         try {
             presentation = new ScorePresentation(this, target, serverPort);
             presentation.show();
-            toast("Tabellone sul display esterno");
+            toast(getString(R.string.main_external_display));
         } catch (WindowManager.InvalidDisplayException e) {
             presentation = null;
         }
@@ -335,8 +335,8 @@ public class MainActivity extends Activity implements CastBridge.Host {
         if (serverPort < 0) return;
         String ip = localIpAddress();
         String url = (ip != null)
-                ? "TV via LAN: http://" + ip + ":" + serverPort
-                : "Display LAN attivo sulla porta " + serverPort;
+                ? getString(R.string.main_lan_hint_url, ip, serverPort)
+                : getString(R.string.main_lan_hint_port, serverPort);
         // mostrato un po' più a lungo, così si fa in tempo a leggerlo
         main.postDelayed(() -> toast(url), 800);
     }

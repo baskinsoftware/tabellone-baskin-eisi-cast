@@ -68,7 +68,7 @@ public class DisplayActivity extends Activity {
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
         status = new TextView(this);
-        status.setText("Ricerca del tabellone sulla rete…");
+        status.setText(R.string.display_searching);
         status.setTextColor(Color.WHITE);
         status.setTextSize(18);
         status.setGravity(Gravity.CENTER);
@@ -95,7 +95,7 @@ public class DisplayActivity extends Activity {
         // se dopo un po' non si è agganciato nulla, offri l'inserimento manuale
         main.postDelayed(() -> {
             if (!connected) {
-                status.setText("Tabellone non trovato automaticamente.\nTieni premuto per opzioni, oppure inserisci l'indirizzo.");
+                status.setText(R.string.display_not_found);
                 promptManualHost();
             }
         }, 9000);
@@ -166,10 +166,10 @@ public class DisplayActivity extends Activity {
         String prev = Roles.manualHost(this);
         if (!prev.isEmpty()) input.setText(prev);
         new AlertDialog.Builder(this)
-                .setTitle("Indirizzo del tabellone")
-                .setMessage("Inserisci IP:porta mostrato dal tabellone.")
+                .setTitle(R.string.display_manual_host_title)
+                .setMessage(R.string.display_manual_host_message)
                 .setView(input)
-                .setPositiveButton("Connetti", (d, w) -> {
+                .setPositiveButton(R.string.display_connect, (d, w) -> {
                     String v = input.getText().toString().trim();
                     if (!v.isEmpty()) {
                         Roles.setManualHost(this, v);
@@ -177,7 +177,7 @@ public class DisplayActivity extends Activity {
                         connectTo(v);
                     }
                 })
-                .setNegativeButton("Continua ricerca", null)
+                .setNegativeButton(R.string.display_continue_search, null)
                 .show();
     }
 

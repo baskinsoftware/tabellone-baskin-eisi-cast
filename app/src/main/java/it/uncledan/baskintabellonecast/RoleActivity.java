@@ -60,24 +60,24 @@ public class RoleActivity extends Activity {
         root.setGravity(Gravity.CENTER_HORIZONTAL);
 
         TextView title = new TextView(this);
-        title.setText("Ruolo di questo dispositivo");
+        title.setText(R.string.role_title);
         title.setTextSize(24);
         title.setPadding(0, 0, 0, dp(8));
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("Scegli come usare questo dispositivo. Potrai cambiarlo in seguito dalle impostazioni.");
+        subtitle.setText(R.string.role_subtitle);
         subtitle.setTextSize(15);
         subtitle.setPadding(0, 0, 0, dp(20));
 
         final RadioGroup group = new RadioGroup(this);
         group.setOrientation(RadioGroup.VERTICAL);
 
-        RadioButton rbMaster  = radio(group, "Tabellone (comandi)",
-                "Questo dispositivo gestisce la partita e trasmette il tabellone.");
-        RadioButton rbDisplay = radio(group, "Schermo (solo visualizzazione)",
-                "Questo dispositivo mostra il tabellone su un TV, senza comandi.");
-        RadioButton rbAuto    = radio(group, "Automatico",
-                "Decide ad ogni avvio in base al dispositivo (TV o telefono).");
+        RadioButton rbMaster  = radio(group, getString(R.string.role_master_label),
+                getString(R.string.role_master_desc));
+        RadioButton rbDisplay = radio(group, getString(R.string.role_display_label),
+                getString(R.string.role_display_desc));
+        RadioButton rbAuto    = radio(group, getString(R.string.role_auto_label),
+                getString(R.string.role_auto_desc));
 
         rbMaster.setTag(Roles.Role.MASTER);
         rbDisplay.setTag(Roles.Role.DISPLAY);
@@ -96,7 +96,7 @@ public class RoleActivity extends Activity {
         });
 
         Button cont = new Button(this);
-        cont.setText("Continua");
+        cont.setText(R.string.role_continue);
         cont.setTextSize(18);
         LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

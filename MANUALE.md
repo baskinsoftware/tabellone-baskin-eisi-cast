@@ -1,4 +1,4 @@
-# Manuale operativo — Tabellone Baskin Cast
+# Manuale operativo — Tabellone Baskin EISI (Cast)
 
 Questo manuale spiega **tutti i modi** per usare l'app e mostrare il tabellone su
 un TV. È pensato per essere semplice: nella maggior parte dei casi basta
@@ -14,12 +14,12 @@ accendere e aprire l'app.
 Il Tabellone Baskin vive in **due repository GitHub** e in **due versioni** che
 si integrano:
 
-- **PWA (web)** — repo **[`baskin-tabellone`](https://github.com/UncleDan/baskin-tabellone)**.
+- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/UncleDan/tabellone-baskin-eisi-pwa)**.
   È il segnapunti web: si apre in un browser, si installa, funziona offline
   (online: <https://www.uncledan.it/tabellone-baskin/>). Da sola mostra il
   tabellone su **uno** schermo. In modalità `?display=1` fa da **schermo (display)
   via browser** per l'app.
-- **App Android — "Cast"** — repo **[`tabellone-baskin-cast`](https://github.com/UncleDan/tabellone-baskin-cast)**
+- **App Android — "Cast"** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/UncleDan/tabellone-baskin-eisi-cast)**
   *(work in progress)*. Incorpora **la stessa** PWA e aggiunge i ruoli, la
   scoperta di rete (NSD), il web server e la presentazione su TV.
 
@@ -185,4 +185,4 @@ app o browser.*
 
 ---
 
-*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin Cast.*
+*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin EISI (Cast).*

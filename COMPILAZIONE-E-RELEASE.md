@@ -1,4 +1,4 @@
-# Compilazione, firma e pubblicazione — Tabellone Baskin Cast
+# Compilazione, firma e pubblicazione — Tabellone Baskin EISI (Cast)
 
 Guida a come compilare l'app in locale e a come i workflow GitHub producono gli
 APK (stabile firmato e beta di debug).
@@ -82,7 +82,7 @@ variabili d'ambiente `KEYSTORE_FILE/…`, la build release **non** viene firmata
 ```bash
 # porta la versione avanti in app/build.gradle (versionCode + versionName)
 git commit -am "Release 1.1.0"
-git tag -a v1.1.0 -m "Tabellone Baskin Cast 1.1.0"
+git tag -a v1.1.0 -m "Tabellone Baskin EISI (Cast) 1.1.0"
 git push origin main --tags
 ```
 
@@ -130,4 +130,4 @@ Con il log dell'errore la messa a punto è rapida.
 
 ---
 
-*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin Cast.*
+*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin EISI (Cast).*

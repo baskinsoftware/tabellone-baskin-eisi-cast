@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tabellone Baskin EISI (Cast)</string>
+
+    <!-- RoleActivity : sélection du rôle de l'appareil -->
+    <string name="role_title">Rôle de cet appareil</string>
+    <string name="role_subtitle">Choisissez comment utiliser cet appareil. Vous pourrez le modifier plus tard dans les réglages.</string>
+    <string name="role_master_label">Tableau (commandes)</string>
+    <string name="role_master_desc">Cet appareil gère le match et diffuse le tableau.</string>
+    <string name="role_display_label">Écran (affichage uniquement)</string>
+    <string name="role_display_desc">Cet appareil affiche le tableau sur un téléviseur, sans commandes.</string>
+    <string name="role_auto_label">Automatique</string>
+    <string name="role_auto_desc">Décide à chaque démarrage selon l\'appareil (téléviseur ou téléphone).</string>
+    <string name="role_continue">Continuer</string>
+
+    <!-- DisplayActivity : recherche et connexion au tableau -->
+    <string name="display_searching">Recherche du tableau sur le réseau…</string>
+    <string name="display_not_found">Tableau non trouvé automatiquement.\nAppui long pour les options, ou saisissez l\'adresse.</string>
+    <string name="display_manual_host_title">Adresse du tableau</string>
+    <string name="display_manual_host_message">Saisissez l\'IP:port affiché par le tableau.</string>
+    <string name="display_connect">Connecter</string>
+    <string name="display_continue_search">Continuer la recherche</string>
+
+    <!-- MainActivity : connexion d'un téléviseur via navigateur -->
+    <string name="main_no_network">Aucun réseau local disponible</string>
+    <string name="main_external_display">Tableau sur l\'écran externe</string>
+    <string name="main_lan_hint_url">TV via LAN : http://%1$s:%2$d</string>
+    <string name="main_lan_hint_port">Affichage LAN actif sur le port %1$d</string>
+    <string name="main_open_on_tv">Sur le navigateur du téléviseur, ouvrez :\n%1$s</string>
+    <string name="main_connect_tv_title">Connecter un téléviseur via navigateur</string>
+    <string name="main_close">Fermer</string>
+</resources>

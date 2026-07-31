@@ -1,4 +1,4 @@
-# Tabellone Baskin Cast — app Android
+# Tabellone Baskin EISI (Cast) — app Android
 
 > ⚠️ **Work in progress.** Questa versione Android (Cast) è in **sviluppo
 > attivo**: funzioni e comportamenti possono cambiare, e alcune parti non sono
@@ -28,12 +28,12 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 [`LICENSE`](LICENSE)). Non applica i vincoli F‑Droid (usa NanoHTTPD/ZXing da Maven
 Central), ma resta interamente open source.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.1.6 (PWA 1.17.7)
-(framework 1.1.6 · incorpora la PWA Tabellone Baskin 1.17.7)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.3.0 (PWA 2026)
+(framework 1.3.0 · incorpora la PWA Tabellone Baskin EISI 2026)
 
 > ℹ️ **Doppia versione (attiva dalla 1.1.0):** il `versionName` mostra sia la
 > versione del **framework** nativo sia quella della **PWA** incorporata (es.
-> `1.1.6 (PWA 1.17.7)`), leggibili dall'"info app" di Android. In `build.gradle`
+> `1.3.0 (PWA 2026)`), leggibili dall'"info app" di Android. In `build.gradle`
 > sono definite separatamente (`frameworkVersion`, `pwaVersion`) ed esposte anche
 > come `BuildConfig.FRAMEWORK_VERSION` / `BuildConfig.PWA_VERSION`. Ad ogni
 > re-sync degli asset si aggiorna `pwaVersion` e si incrementa il `versionCode`.
@@ -46,11 +46,11 @@ Central), ma resta interamente open source.
 
 Il Tabellone Baskin esiste in **due repository**, che lavorano insieme:
 
-- **PWA (web)** — repo **[`baskin-tabellone`](https://github.com/UncleDan/baskin-tabellone)**:
+- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/UncleDan/tabellone-baskin-eisi-pwa)**:
   il segnapunti web, installabile e offline, ospitabile su GitHub Pages
   (online su <https://www.uncledan.it/tabellone-baskin/>). È anche il *display*
   via browser di questa app.
-- **App Android (Cast)** — repo **[`tabellone-baskin-cast`](https://github.com/UncleDan/tabellone-baskin-cast)** *(questo, work in progress)*:
+- **App Android (Cast)** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/UncleDan/tabellone-baskin-eisi-cast)** *(questo, work in progress)*:
   incorpora la stessa PWA e aggiunge i ruoli, la scoperta di rete e la
   presentazione su TV.
 
@@ -111,6 +111,28 @@ app/src/main/java/it/uncledan/baskintabellonecast/
 app/src/main/assets/pwa/    la PWA Tabellone Baskin (controllo + modalità display)
 ```
 
+## Localizzazione
+
+Dalla **1.2.0**, tutte le stringhe utente del framework nativo (schermata
+scelta ruolo, dialog di connessione, toast di stato) sono estratte in risorse
+Android e tradotte in **italiano (base), inglese e francese**:
+
+```
+app/src/main/res/values/strings.xml      italiano (default/fallback)
+app/src/main/res/values-en/strings.xml   inglese
+app/src/main/res/values-fr/strings.xml   francese
+```
+
+Android sceglie automaticamente la lingua in base a quella di sistema del
+dispositivo, con fallback all'italiano se non è tra quelle disponibili.
+Questo è indipendente dalla lingua della PWA incorporata (che dalla 1.18.0 ha
+la propria selezione IT/EN/FR gestita da `js/i18n.js`): le due localizzazioni
+non sono collegate, cambiare una non cambia l'altra.
+
+Se aggiungi nuove stringhe nel codice nativo, ricordati di estrarle in tutti
+e tre i file `strings.xml` (non lasciarle mai hardcoded in Java), altrimenti
+compare in una sola lingua indipendentemente dal dispositivo.
+
 ## Permessi
 
 - **INTERNET**: web server integrato, scoperta NSD, display secondario. Nessun
@@ -147,4 +169,4 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.1.6 (PWA 1.17.7)
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.3.0 (PWA 2026)
