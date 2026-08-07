@@ -1,0 +1,1 @@
+Baskin scoreboard, with display on a TV over the local network

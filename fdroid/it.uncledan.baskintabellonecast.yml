@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Metadati per la candidatura a F-Droid.
+#
+# ATTENZIONE: questo file NON va nel repo dell'app — è una COPIA DI LAVORO.
+# Il file "vero" va inviato come merge request al repository dei metadati:
+#
+#     https://gitlab.com/fdroid/fdroiddata
+#     percorso: metadata/it.uncledan.baskintabellonecast.yml
+#
+# Lo teniamo qui versionato per non doverlo riscrivere ad ogni release e per
+# tenere traccia di cosa è stato dichiarato a F-Droid.
+#
+# Riferimento campi: https://f-droid.org/docs/Build_Metadata_Reference/
+# ─────────────────────────────────────────────────────────────────────────────
+
+Categories:
+  - Sports & Health
+License: MIT
+AuthorName: Daniele Lolli (UncleDan)
+SourceCode: https://github.com/UncleDan/tabellone-baskin-eisi-cast
+IssueTracker: https://github.com/UncleDan/tabellone-baskin-eisi-cast/issues
+Changelog: https://github.com/UncleDan/tabellone-baskin-eisi-cast/releases
+
+# Descrizioni e screenshot NON vanno ripetuti qui: F-Droid li legge da solo
+# dalla cartella fastlane/metadata/android/<locale>/ del repo dell'app.
+
+RepoType: git
+Repo: https://github.com/UncleDan/tabellone-baskin-eisi-cast.git
+
+Builds:
+  - versionName: '26.0'
+    versionCode: 260000
+    commit: v26.0
+    subdir: app
+    gradle:
+      - yes
+
+# Nota sul versionName: dalla 26.0 il progetto usa lo schema
+# <versione>.<sottoversione>.<patch>, con la versione allineata all'anno della
+# PWA incorporata (serie 26.x per il 2026, 27.x dal 2027). La sottoversione
+# avanza ad ogni release; la patch copre le modifiche al solo Cast.
+# versionCode = anno*10000 + sottoversione*100 + patch.
+#
+# Rispetto al vecchio schema a "doppia versione" ("1.3.3 (PWA 2026d)"), il
+# versionName è ora una stringa semplice assegnata da una variabile gradle:
+# fdroidserver riesce a leggerla, quindi l'aggiornamento automatico dei
+# metadati può funzionare. Resta comunque prudente verificare i primi
+# aggiornamenti automatici prima di fidarsi del tutto.
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+
+CurrentVersion: '26.0'
+CurrentVersionCode: 260000

@@ -12,7 +12,7 @@ Requisiti: JDK 17 e Android SDK (`compileSdk 34`). Dalla cartella del progetto:
 ```bash
 # APK di debug (firmato con la chiave di debug di Android) — versione "-beta"
 ./gradlew assembleDebug
-# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 1.1.0-beta)
+# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.0-beta)
 
 # APK release (firmato solo se imposti le variabili keystore, vedi §3)
 ./gradlew assembleRelease
@@ -25,14 +25,15 @@ riconoscibili a colpo d'occhio rispetto alla release.
 
 ---
 
-## 2. I due workflow GitHub
+## 2. I workflow GitHub
 
 Nella cartella `.github/workflows/`:
 
 | Workflow | File | Quando parte | Cosa produce |
 |---|---|---|---|
-| **Release APK** | `release.yml` | push di un tag `v*` | APK **stabile firmato** + APK **`-beta`** di debug, allegati alla Release |
-| **Beta APK (debug)** | `beta.yml` | "Run workflow" manuale, o push sul branch `beta` | APK **`-beta`** di debug come *artifact* scaricabile dal run (niente segreti) |
+| **Release APK** | `release.yml` | push di un tag `v*` | APK **stabile firmato**, allegato alla Release |
+| **Beta APK (unsigned)** | `beta.yml` | "Run workflow" manuale, o push sul branch `beta` | APK release **non firmato** come *artifact* del run (niente segreti) |
+| **Prepara AAB per Google Play** | `play-prepare.yml` | push di un tag `v*`, o manuale | **AAB firmato** come *artifact*, per l'upload manuale su Play Console |
 
 Idea: `beta.yml` per i test rapidi (nessuna configurazione), `release.yml` quando
 pubblichi una versione vera.
@@ -81,15 +82,17 @@ variabili d'ambiente `KEYSTORE_FILE/…`, la build release **non** viene firmata
 
 ```bash
 # porta la versione avanti in app/build.gradle (versionCode + versionName)
-git commit -am "Release 1.1.0"
-git tag -a v1.1.0 -m "Tabellone Baskin EISI (Cast) 1.1.0"
+git commit -am "Release 26.0"
+git tag -a v26.0 -m "Tabellone Baskin EISI (Cast) 26.0"
 git push origin main --tags
 ```
 
-Il push del tag `v1.1.0` avvia `release.yml`, che allega alla Release:
+Il push del tag `v26.0` avvia `release.yml`, che allega alla Release
+`TabelloneBaskinCast-v26.0-signed.apk` (stabile firmato), e `play-prepare.yml`,
+che prepara l'AAB per Google Play come artifact del run.
 
-- `TabelloneBaskinCast-v1.1.0.apk` (stabile firmato)
-- `TabelloneBaskinCast-v1.1.0-beta.apk` (debug)
+> Sulla numerazione delle versioni (`26.0`, `26.1`, `26.1.1`, …) vedi il riquadro
+> "Versione unica, derivata dalla PWA" nel [`README.md`](README.md).
 
 ---
 

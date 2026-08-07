@@ -1,0 +1,3 @@
+* Aggiornata la PWA del tabellone incorporata (versione 2026g)
+* Nuova numerazione delle versioni, allineata all'anno della PWA
+* Correzioni e migliorie minori

@@ -1,0 +1,24 @@
+A scoreboard app for <b>Baskin</b>, the inclusive sport where people with and without disabilities play together.
+
+The app turns an Android phone or tablet into the scorer's table: from there you control score, clock, periods, fouls and possession. The same scoreboard can be shown on a television, so the audience and both teams can follow the game.
+
+<b>Getting the scoreboard onto a TV</b>
+
+The app runs a small web server that works <i>on the local network only</i>: it never contacts a remote server and collects no data. A television can connect in three ways:
+
+* using a second Android device (including a TV stick or box) running the same app in "Screen" mode, which finds the scoreboard automatically on the network;
+* opening an address in the television's own browser, which the app also shows as a QR code;
+* over HDMI or screen casting, using the secondary display.
+
+<b>Features</b>
+
+* Score, clock, periods, fouls and possession
+* Roles: "Scoreboard" (controls) or "Screen" (display only)
+* Works without Internet: a local Wi-Fi network is enough
+* No ads, no tracking, no data collection
+* Interface in Italian, English and French
+* Works on Android TV and on boxes/sticks with no touchscreen
+
+<b>Note</b>
+
+An independent personal project, built by a Baskin referee. The code is free software, under the MIT license.

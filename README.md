@@ -25,18 +25,26 @@ senza fili, in modo semplice.
 È **FOSS**: codice rilasciato sotto licenza **MIT** (vedi [`LICENSE`](LICENSE)).
 Compilabile con Gradle + AndroidX + NanoHTTPD + ZXing (librerie di terzi anch'esse
 FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni in
-[`LICENSE`](LICENSE)). Non applica i vincoli F‑Droid (usa NanoHTTPD/ZXing da Maven
-Central), ma resta interamente open source.
+[`LICENSE`](LICENSE)). Tutte le dipendenze arrivano da Maven Central e Google
+Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
+[`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 1.3.0 (PWA 2026)
-(framework 1.3.0 · incorpora la PWA Tabellone Baskin EISI 2026)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.0
+(incorpora la PWA Tabellone Baskin EISI 2026g)
 
-> ℹ️ **Doppia versione (attiva dalla 1.1.0):** il `versionName` mostra sia la
-> versione del **framework** nativo sia quella della **PWA** incorporata (es.
-> `1.3.0 (PWA 2026)`), leggibili dall'"info app" di Android. In `build.gradle`
-> sono definite separatamente (`frameworkVersion`, `pwaVersion`) ed esposte anche
-> come `BuildConfig.FRAMEWORK_VERSION` / `BuildConfig.PWA_VERSION`. Ad ogni
-> re-sync degli asset si aggiorna `pwaVersion` e si incrementa il `versionCode`.
+> ℹ️ **Numerazione `versione.sottoversione.patch` (dalla 26.0):** la **versione**
+> è allineata all'anno della PWA incorporata — la PWA numera per anno (`2026a`,
+> `2026b`, …), quindi per tutto il 2026 il Cast sta nella serie `26.x`, e dal
+> 2027 si passa a `27.x`. La **sottoversione** avanza ad ogni release (di norma
+> un nuovo re-sync della PWA); la **patch**, terza cifra omessa quando è `0`,
+> copre le modifiche al solo Cast (fix nativi, CI, dipendenze) che non cambiano
+> la PWA incorporata: `26.0 → 26.1 → 26.1.1`. Il `versionCode` segue
+> `anno*10000 + sottoversione*100 + patch` (es. `26.0 → 260000`, `26.1.1 →
+> 260101`), sempre crescente come richiede Google Play. La versione della PWA
+> non compare nel nome, ma resta leggibile via `BuildConfig.PWA_VERSION`.
+>
+> <sub>Fino alla 1.3.3 si usava una "doppia versione" (`1.3.3 (PWA 2026d)`),
+> abbandonata perché poco conforme agli store.</sub>
 
 ---
 
@@ -111,6 +119,15 @@ app/src/main/java/it/uncledan/baskintabellonecast/
 app/src/main/assets/pwa/    la PWA Tabellone Baskin (controllo + modalità display)
 ```
 
+> ℹ️ **"Chiudi applicazione" (dalla 1.3.2):** la voce di menu della PWA chiama
+> `window.close()`. Dentro una WebView Android questo veniva ignorato
+> silenziosamente senza `WebChromeClient.onCloseWindow()` (bug corretto in
+> `MainActivity.java`, che ora chiude l'intero task con `finishAffinity()`).
+> `CastBridge` espone anche un metodo dedicato `quitApp()`, pronto per
+> un'integrazione esplicita lato PWA sorgente (stesso pattern usato per
+> `openRoleSettings`/`showConnectInfo`), se in futuro si preferisce non
+> dipendere dal comportamento di `window.close()`.
+
 ## Localizzazione
 
 Dalla **1.2.0**, tutte le stringhe utente del framework nativo (schermata
@@ -169,4 +186,4 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 1.3.0 (PWA 2026)
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.0
