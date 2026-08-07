@@ -33,3 +33,23 @@ I termini completi di queste licenze sono disponibili presso i rispettivi
 progetti. La PWA inclusa in app/src/main/assets/pwa/ è rilasciata dallo stesso
 autore sotto licenza MIT; i file audio in pwa/sounds/ sono in CC0 1.0
 (vedi pwa/sounds/CREDITS.txt).
+
+---
+
+Marchi e loghi di terzi
+-----------------------
+
+I file:
+
+  app/src/main/assets/pwa/icons/logos/logo-baskin.svg
+  app/src/main/assets/pwa/icons/logos/logo-eisi.svg
+
+riproducono rispettivamente il logo del Baskin e il logo di EISI. NON sono
+opera dell'autore di questo software e NON sono coperti dalla licenza MIT di
+cui sopra: restano di proprietà dei rispettivi titolari, che ne conservano
+tutti i diritti, marchio registrato incluso.
+
+TODO — da completare prima di un'eventuale candidatura a F-Droid o di una
+pubblicazione su store: indicare qui gli estremi dell'autorizzazione all'uso
+dei due loghi (chi l'ha concessa e in che termini), oppure sostituirli con
+grafica originale. Vedi F-DROID.md, sezione "Loghi di terzi".

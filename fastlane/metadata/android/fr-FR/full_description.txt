@@ -1,0 +1,24 @@
+Tableau de marque conçu pour le <b>Baskin</b>, le sport inclusif où jouent ensemble des personnes avec et sans handicap.
+
+L'application transforme un téléphone ou une tablette Android en table de marque : on y gère le score, le chronomètre, les périodes, les fautes et la possession. Le même tableau peut être affiché sur un téléviseur, pour que le public et les équipes le suivent en grand.
+
+<b>Afficher le tableau sur un téléviseur</b>
+
+L'application intègre un petit serveur web qui fonctionne <i>uniquement sur le réseau local</i> : elle ne contacte aucun serveur distant et ne collecte aucune donnée. Le téléviseur peut se connecter de trois façons :
+
+* avec un second appareil Android (y compris une clé ou un boîtier TV) exécutant la même application en mode « Écran », qui trouve le tableau automatiquement sur le réseau ;
+* en ouvrant une adresse dans le navigateur du téléviseur, que l'application affiche aussi sous forme de QR code ;
+* via HDMI ou diffusion d'écran, en utilisant l'écran secondaire.
+
+<b>Fonctionnalités</b>
+
+* Score, chronomètre, périodes, fautes et possession
+* Rôles : « Tableau » (commandes) ou « Écran » (affichage seul)
+* Fonctionne sans Internet : un réseau Wi-Fi local suffit
+* Aucune publicité, aucun pistage, aucune collecte de données
+* Interface en italien, anglais et français
+* Compatible Android TV et boîtiers/clés sans écran tactile
+
+<b>Remarque</b>
+
+Projet personnel et indépendant, réalisé par un arbitre de Baskin. Le code est libre, sous licence MIT.

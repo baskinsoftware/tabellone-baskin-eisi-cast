@@ -1,0 +1,24 @@
+Tabellone segnapunti pensato per il <b>Baskin</b>, lo sport inclusivo in cui giocano insieme persone con e senza disabilità.
+
+L'app trasforma un telefono o tablet Android nel banco del cronometrista: da lì si gestiscono punteggio, cronometro, periodi, falli e tempi di possesso. Lo stesso tabellone può essere mostrato su un televisore, così pubblico e squadre lo vedono in grande.
+
+<b>Come arriva il tabellone sul TV</b>
+
+L'app include un piccolo server web che funziona <i>solo sulla rete locale</i>: non contatta alcun server remoto e non raccoglie dati. Il televisore può collegarsi in tre modi:
+
+* con un secondo dispositivo Android (anche una chiavetta o un box TV) che esegue la stessa app in modalità "Schermo", trovando il tabellone automaticamente in rete;
+* aprendo un indirizzo nel browser del televisore, mostrato dall'app anche come codice QR;
+* via cavo HDMI o trasmissione dello schermo, sfruttando il display secondario.
+
+<b>Caratteristiche</b>
+
+* Punteggio, cronometro, periodi, falli e possesso
+* Ruoli: "Tabellone" (comandi) oppure "Schermo" (sola visualizzazione)
+* Funziona senza Internet: basta una rete Wi-Fi locale
+* Nessuna pubblicità, nessun tracciamento, nessuna raccolta di dati
+* Interfaccia in italiano, inglese e francese
+* Compatibile con Android TV e con box/chiavette senza touch
+
+<b>Nota</b>
+
+Progetto personale e indipendente, realizzato da un arbitro di Baskin. Il codice è libero, sotto licenza MIT.

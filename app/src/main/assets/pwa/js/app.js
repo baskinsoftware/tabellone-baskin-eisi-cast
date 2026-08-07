@@ -5,7 +5,7 @@
    ===================================================================== */
 'use strict';
 
-const APP_VERSION = '2026';
+const APP_VERSION = '2026g';
 const STORE_KEY = 'tabellone-baskin-eisi-v1';
 
 /* Modalità "sola visualizzazione": attivata con ?display=1 nell'URL.
@@ -109,7 +109,7 @@ function freshState(cfg){
     bonusActive: [false, false],  // bonus per squadra (modalita' 'teamFouls')
     possession: [false, false],   // freccia possesso: [sinistra, destra]
     toPhase: 'h1',           // fase a cui si riferisce timeoutsUsed
-    names: [t('default_team_name',{n:1}), t('default_team_name',{n:2})],
+    names: [t('team_home'), t('team_away')],
     namesCustom: [false, false],    // true se il nome è stato personalizzato dall'utente
     colors: ['#ffffff', '#ffffff']   // colore della scritta nome, per squadra
   };
@@ -151,12 +151,18 @@ function loadState(){
         s.config.configMode = 'custom';
       }
       s.running = false;            // non si riprende mai "in corsa"
-      if(!Array.isArray(s.names)) s.names = ['Squadra 1','Squadra 2'];
+      if(!Array.isArray(s.names)) s.names = [t('team_home'), t('team_away')];
       // migrazione: namesCustom assente -> dedotto controllando se il nome
-      // salvato è uno dei default noti in una qualsiasi delle lingue supportate
-      // (se sì, resta "non personalizzato" e continuerà a tradursi da solo)
+      // salvato è uno dei default noti (attuali casa/ospiti in una qualsiasi
+      // lingua, o i vecchi "Squadra 1/2" numerati delle versioni precedenti).
+      // Se è un default, resta "non personalizzato" e continuerà a tradursi da solo.
       if(!Array.isArray(s.namesCustom)){
-        const knownDefaults = [1,2].map(n => I18N_SUPPORTED.map(l => I18N_DICT[l].default_team_name.replace('{n}', n)));
+        const LEGACY = [
+          ['Squadra 1','Team 1','Équipe 1','Equipo 1','Mannschaft 1'],
+          ['Squadra 2','Team 2','Équipe 2','Equipo 2','Mannschaft 2']
+        ];
+        const knownDefaults = [0,1].map(i =>
+          I18N_SUPPORTED.map(l => I18N_DICT[l][i===0 ? 'team_home' : 'team_away']).concat(LEGACY[i]));
         s.namesCustom = [0,1].map(i => !knownDefaults[i].includes((s.names[i]||'').trim()));
       }
       if(!Array.isArray(s.colors)) s.colors = ['#ffffff','#ffffff'];
@@ -175,7 +181,7 @@ function loadState(){
    nella lingua corrente (si aggiorna da solo cambiando lingua); se personalizzato,
    il testo scelto dall'utente. */
 function getTeamName(i){
-  return state.namesCustom[i] ? state.names[i] : t('default_team_name', {n: i+1});
+  return state.namesCustom[i] ? state.names[i] : t(i === 0 ? 'team_home' : 'team_away');
 }
 /* variante di phaseKey utilizzabile prima che 'state' sia assegnato */
 function phaseKeyFor(s, period){
@@ -448,6 +454,10 @@ const colorRows = [];
     sw.className = 'swatch';
     sw.style.background = col;
     sw.dataset.color = col.toLowerCase();
+    // marcatori i18n: così applyI18n() li ritraduce a ogni cambio lingua,
+    // senza bisogno di codice dedicato che rischierebbe di restare indietro
+    sw.setAttribute('data-i18n-aria', 'color_label');
+    sw.setAttribute('data-i18n-color', col);
     sw.setAttribute('aria-label', t('color_label', {color: col}));
     sw.addEventListener('click', ()=> setTeamColor(i, col));
     row.appendChild(sw);
@@ -455,6 +465,7 @@ const colorRows = [];
   const custom = document.createElement('input');
   custom.type = 'color';
   custom.className = 'swatch custom';
+  custom.setAttribute('data-i18n-aria', 'color_custom');
   custom.setAttribute('aria-label', t('color_custom'));
   custom.addEventListener('input', ()=> setTeamColor(i, custom.value));
   row.appendChild(custom);
@@ -835,7 +846,7 @@ function resetClock(){
 function newGame(){
   stopClock();
   state = freshState(state.config);
-  state.names = state.names || ['Squadra 1','Squadra 2'];
+  state.names = state.names || [t('team_home'), t('team_away')];
   renderAll();
   saveState();
   toast(t('toast_new_match'));
@@ -952,7 +963,7 @@ function enterEdit(){
 }
 function exitEdit(){
   // assicura nomi validi: se vuoto, torna al default (auto-tradotto)
-  for(let i=0;i<2;i++){ if(!state.names[i].trim()){ state.names[i] = t('default_team_name',{n:i+1}); state.namesCustom[i] = false; } }
+  for(let i=0;i<2;i++){ if(!state.names[i].trim()){ state.namesCustom[i] = false; state.names[i] = getTeamName(i); } }
   body.classList.remove('mode-edit');
   body.classList.add('mode-game');
   renderAll();
@@ -1176,12 +1187,14 @@ function saveSettings(){
 /* Reset applicazione: riporta TUTTO ai valori predefiniti (Baskin) */
 function resetApp(){
   stopClock();
+  I18N.setPref('system');   // la lingua torna al rilevamento automatico di sistema
   state = freshState(DEFAULT_CONFIG);
   pendingTimeoutMode = 'baskin';
   pendingMode = 'baskin';
   closeSheet('settingsBackdrop');
   applyFoulMode();
   updateFoulLabel();
+  applyI18n();   // riapplica le traduzioni statiche nella lingua (ri)rilevata
   renderAll();
   saveState();
   toast(t('toast_app_reset'));
@@ -1397,7 +1410,7 @@ function toggleScoreColor(){
 }
 
 /* menu "..." (Informazioni + aggiornamenti) */
-onActivate($('#btnMore'), ()=>{ updateMuteLabel(); updateFoulLabel(); updateScoreColorLabel(); openSheet('moreBackdrop'); });
+onActivate($('#btnMore'), ()=>{ updateMuteLabel(); updateFoulLabel(); updateScoreColorLabel(); updateLangHighlight(); openSheet('moreBackdrop'); });
 onActivate($('#moreClose'), ()=> closeSheet('moreBackdrop'));
 onActivate($('#actCheckUpdate'), checkForUpdates);
 
@@ -1423,17 +1436,72 @@ onActivate($('#guideClose'), ()=>{ closeSheet('guideBackdrop'); });
 
 onActivate($('#actScoreColor'), toggleScoreColor);
 onActivate($('#actMute'), toggleMute);
-/* selettore lingua diretto: ogni bandiera imposta subito quella lingua */
+/* selettore lingua diretto: ogni bandiera apre una conferma nella lingua DI
+   DESTINAZIONE (non quella attiva), così chi conferma legge già il messaggio
+   nella lingua che otterrà e sa con certezza cosa aspettarsi.
+   Il testo cambia se l'app è installata (si chiude davvero) oppure aperta nel
+   browser, dove window.close() viene bloccato: in quel caso si consiglia di
+   chiudere e riaprire manualmente. */
+let pendingLangChoice = null;
 document.querySelectorAll('.lang-flag').forEach(btn=>{
-  onActivate(btn, ()=>{ I18N.setPref(btn.dataset.lang); location.reload(); });
+  onActivate(btn, ()=>{
+    const choice = btn.dataset.lang;                 // 'system' | 'it' | 'en' | 'fr' | 'es' | 'de'
+    const resolvedLang = (choice === 'system') ? I18N.detectSystem() : choice;
+    const langName = I18N.tFor(resolvedLang, 'lang_name');
+    pendingLangChoice = choice;
+    $('#langConfirmDialog').setAttribute('aria-label', I18N.tFor(resolvedLang, 'lang_confirm_title'));
+    $('#langConfirmTitle').textContent = I18N.tFor(resolvedLang, 'lang_confirm_title');
+    $('#langConfirmText').textContent = I18N.tFor(resolvedLang, 'lang_confirm_text', {lang: langName});
+    $('#langConfirmYes').textContent = I18N.tFor(resolvedLang, 'lang_confirm_yes');
+    $('#langConfirmCancel').textContent = I18N.tFor(resolvedLang, 'cancel');
+    closeSheet('moreBackdrop');
+    openSheet('langConfirmBackdrop');
+  });
 });
-/* evidenzia la bandiera/lingua attualmente attiva */
-{
+onActivate($('#langConfirmCancel'), ()=>{
+  // annulla: nessuna modifica, si chiude il popup e si torna nel menu
+  pendingLangChoice = null;
+  closeSheet('langConfirmBackdrop');
+  openSheet('moreBackdrop');
+});
+onActivate($('#langConfirmYes'), ()=>{
+  if(pendingLangChoice === null) return;
+  I18N.setPref(pendingLangChoice);
+  pendingLangChoice = null;
+  closeSheet('langConfirmBackdrop');
+  saveState();
+  // se la lingua era forzata da ?lang=, togliamo il parametro dall'URL: altrimenti
+  // continuerebbe a vincere sulla scelta appena fatta dall'utente
+  if(I18N.urlLang()){
+    try{
+      const u = new URL(location.href);
+      u.searchParams.delete('lang');
+      history.replaceState(null, '', u.toString());
+    }catch(_){}
+  }
+  // Cambio in diretta, senza ricaricare né chiudere l'app: applyI18n() ritraduce
+  // tutto il testo statico (compresi gli aria-label generati da JS, marcati con
+  // data-i18n-aria) e renderAll() ridisegna nomi squadra e indicatori.
+  applyI18n();
+  renderAll();
+  updateLangHighlight();
+  toast(t('toast_settings_saved'));
+});
+/* evidenzia la bandiera/lingua attualmente attiva (richiamata anche ad ogni
+   apertura del menu, non solo all'avvio: es. dopo un reset applicazione,
+   che può cambiare la preferenza senza ricaricare la pagina) */
+function updateLangHighlight(){
+  document.querySelectorAll('.lang-flag').forEach(b=> b.classList.remove('is-active'));
+  // se la lingua è forzata da ?lang=, evidenziamo quella: è ciò che si sta
+  // effettivamente vedendo, mostrare la preferenza salvata sarebbe fuorviante
+  const forced = I18N.urlLang();
   const pref = I18N.getPref();
-  const active = (pref === 'system' || !I18N.supported.includes(pref)) ? 'system' : pref;
+  const active = forced ? forced
+                        : ((pref === 'system' || !I18N.supported.includes(pref)) ? 'system' : pref);
   const btn = document.querySelector(`.lang-flag[data-lang="${active}"]`);
   if(btn) btn.classList.add('is-active');
 }
+updateLangHighlight();
 onActivate($('#actSettings'), ()=>{ closeSheet('moreBackdrop'); openSettings(); });
 onActivate($('#actResetApp'), ()=>{
   closeSheet('moreBackdrop');
@@ -1525,6 +1593,15 @@ function isTyping(e){ const t=e.target; return t && (t.tagName==='INPUT'||t.tagN
 /* =====================================================================
    AVVIO
    ===================================================================== */
+/* Difesa contro un reload che ripristina uno stato del DOM non aggiornato
+   (osservato su alcuni browser/PWA mobili dopo un cambio lingua, che su
+   quei dispositivi mostrava contemporaneamente i pulsanti di gioco e di
+   modifica finché non si chiudeva e riapriva l'app): la modalità di
+   partenza è SEMPRE "gioco", quindi la forziamo qui esplicitamente prima
+   di ogni altra cosa, invece di fidarci di qualunque stato residuo. */
+body.classList.remove('mode-edit');
+body.classList.add('mode-game');
+
 applyI18n();   // traduce l'HTML statico prima del primo render
 renderAll();
 

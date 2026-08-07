@@ -1,0 +1,3 @@
+* Updated the embedded scoreboard PWA (version 2026g)
+* New version numbering, aligned with the PWA year
+* Minor fixes and improvements

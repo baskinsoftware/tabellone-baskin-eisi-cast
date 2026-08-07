@@ -10,6 +10,12 @@ import android.webkit.JavascriptInterface;
  *    il web server integrato (da cui display e TV leggono).
  *  - openRoleSettings(): apre la scelta del ruolo (voce nelle impostazioni PWA).
  *  - showConnectInfo(): mostra indirizzo + QR per collegare un TV via browser.
+ *  - quitApp(): chiude l'app nativa. Esposto per un'integrazione esplicita
+ *    lato PWA (stesso pattern di openRoleSettings/showConnectInfo, guardia
+ *    "typeof cb.quitApp === 'function'" prima di mostrare la voce). Finché
+ *    la PWA sorgente non chiama questo bridge, "Chiudi applicazione" resta
+ *    affidata a window.close(), gestito lato nativo da
+ *    WebChromeClient.onCloseWindow() in MainActivity.
  *
  * Autore: Daniele Lolli (UncleDan)
  */
@@ -19,6 +25,7 @@ public class CastBridge {
         void onState(String json);
         void onOpenRoleSettings();
         void onShowConnectInfo();
+        void onQuitApp();
     }
 
     private final Host host;
@@ -40,5 +47,10 @@ public class CastBridge {
     @JavascriptInterface
     public void showConnectInfo() {
         if (host != null) host.onShowConnectInfo();
+    }
+
+    @JavascriptInterface
+    public void quitApp() {
+        if (host != null) host.onQuitApp();
     }
 }

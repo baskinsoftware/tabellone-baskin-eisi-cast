@@ -149,6 +149,17 @@ public class MainActivity extends Activity implements CastBridge.Host {
                 resultMsg.sendToTarget();
                 return true;
             }
+
+            @Override
+            public void onCloseWindow(WebView window) {
+                // La voce "Chiudi applicazione" della PWA chiama window.close():
+                // in una WebView, senza questo hook, la chiamata viene ignorata
+                // silenziosamente (nessun errore, nessun effetto) e il pulsante
+                // sembra non fare nulla. finishAffinity() chiude l'intero task
+                // (anche l'eventuale presentazione sul display esterno), che è
+                // il comportamento atteso da "chiudi applicazione".
+                finishAffinity();
+            }
         });
 
         enterImmersive();
@@ -190,6 +201,11 @@ public class MainActivity extends Activity implements CastBridge.Host {
     @Override
     public void onShowConnectInfo() {
         main.post(this::showConnectInfoDialog);
+    }
+
+    @Override
+    public void onQuitApp() {
+        main.post(this::finishAffinity);
     }
 
     // ------------------------------------------------------------- NSD (master)
