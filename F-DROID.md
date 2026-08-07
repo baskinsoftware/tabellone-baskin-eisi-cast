@@ -102,9 +102,10 @@ Il vecchio `versionName` composto (`1.3.3 (PWA 2026d)`) era costruito per
 interpolazione da due variabili gradle e `fdroidserver` non riusciva a
 ricavarlo: l'aggiornamento automatico dei metadati non avrebbe funzionato.
 
-Dalla **26.0** il progetto usa lo schema `<versione>.<sottoversione>.<patch>`,
-con la versione allineata all'anno della PWA incorporata (serie `26.x` per il
-2026). Il `versionName` è ora una stringa semplice assegnata da una variabile
+Dalla **26.0** il Cast tiene la propria numerazione **in parallelo** a quella
+della PWA incorporata (`PWA 26.0 → Cast 26.0`), con una terza cifra per le
+modifiche al solo Cast. Il `versionName` è una stringa semplice assegnata da una
+variabile
 gradle, che `fdroidserver` sa leggere: `AutoUpdateMode: Version` è quindi
 impostato nella bozza dei metadati. Conviene comunque **verificare i primi
 aggiornamenti automatici** prima di considerarli affidabili.

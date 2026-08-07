@@ -6,42 +6,62 @@ android {
     namespace 'it.uncledan.baskintabellonecast'
     compileSdk 34
 
-    // ── Versione: <versione>.<sottoversione>.<patch> ─────────────────────────
-    // La VERSIONE (major) è allineata all'anno della PWA incorporata: la PWA
-    // usa uno schema per anno (2026a, 2026b, ...), quindi per tutto il 2026 il
-    // Cast sta nella serie 26.x. Dal 2027 si passerà a 27.x.
+    // ── Versioni parallele Cast ⇄ PWA ───────────────────────────────────────
+    // Cast e PWA hanno numerazioni SEPARATE ma TENUTE IN PARALLELO: il Cast
+    // rispecchia la versione della PWA che incorpora.
     //
-    //   26.0     prima release della serie 2026
-    //   26.1     release successiva (tipicamente un nuovo re-sync della PWA)
-    //   26.1.1   modifica al SOLO Cast (fix nativo, CI, dipendenze), PWA invariata
+    //   PWA 26.0   ->  Cast 26.0
+    //   PWA 26.1   ->  Cast 26.1
+    //   PWA 27.0   ->  Cast 27.0
     //
-    // La SOTTOVERSIONE avanza ad ogni release; la PATCH (terza cifra, omessa
-    // quando è 0) serve alle correzioni che non cambiano la PWA incorporata.
+    // Le modifiche al SOLO Cast (fix nativi, icone, CI, dipendenze), a parità
+    // di PWA, aggiungono una terza cifra e NON toccano le prime due:
     //
-    // versionCode: anno*10000 + sottoversione*100 + patch. Sempre crescente,
-    // come richiede Google Play, con margine ampio (99 sottoversioni, 99 patch).
-    //   26.0     -> 260000
-    //   26.1     -> 260100
-    //   26.1.1   -> 260101
-    //   27.0     -> 270000
-    def appVersion = "26.0"
-    // PWA incorporata: non entra nel versionName, ma resta esposta come
-    // BuildConfig.PWA_VERSION, utile per assistenza e diagnostica.
-    def pwaVersion = "2026g"
+    //   26.0  ->  26.0.1  ->  26.0.2      (PWA sempre 26.0)
+    //
+    // castPatch torna a 0 ad ogni nuovo re-sync della PWA.
+    //
+    // versionCode = major*10000 + minor*100 + castPatch:
+    //   26.0    -> 260000        26.0.1 -> 260001
+    //   26.1    -> 260100        27.0   -> 270000
+    // Sempre crescente, come richiede Google Play.
+    //
+    // NB: i tre valori qui sotto sono scritti come LETTERALI di proposito —
+    // fdroidserver li legge staticamente da questo file, e un valore calcolato
+    // non sarebbe riconosciuto. Per evitare disallineamenti a mano c'è il
+    // controllo automatico più sotto: se un numero non torna, la build si ferma.
+    def pwaVersion = "26.0"   // versione della PWA incorporata in assets/pwa/
+    def castPatch  = 0        // >0 solo per modifiche al solo Cast
+    def appVersion = "26.0"   // = pwaVersion (+ ".castPatch" se castPatch > 0)
 
     defaultConfig {
         applicationId "it.uncledan.baskintabellonecast"
         minSdk 21
         targetSdk 34
-        // 260000 = 26.0 (anno 26, sottoversione 0, patch 0). Vedi la regola sopra.
-        // Il vecchio schema arrivava a 10303 (framework 1.3.3): il salto a
-        // 260000 è voluto e resta monotòno crescente.
         versionCode 260000
         versionName appVersion
 
         // esposte al codice/BuildConfig per un'eventuale schermata "Info"
         buildConfigField "String", "APP_VERSION", "\"${appVersion}\""
         buildConfigField "String", "PWA_VERSION", "\"${pwaVersion}\""
+    }
+
+    // ── Controllo di coerenza delle versioni parallele ───────────────────────
+    // Verifica che appVersion e versionCode rispettino la regola qui sopra a
+    // partire da pwaVersion + castPatch. Sbagliare un numero durante un
+    // re-sync diventa un errore di build, non un bug scoperto sullo store.
+    def _pwaParts    = pwaVersion.tokenize('.').collect { it.toInteger() }
+    def _attesoName  = castPatch == 0 ? pwaVersion : "${pwaVersion}.${castPatch}"
+    def _attesoCode  = _pwaParts[0] * 10000 + _pwaParts[1] * 100 + castPatch
+    if (appVersion != _attesoName) {
+        throw new GradleException(
+            "Versioni non allineate: appVersion='${appVersion}', ma da PWA " +
+            "${pwaVersion} + castPatch ${castPatch} risulta '${_attesoName}'.")
+    }
+    if (defaultConfig.versionCode != _attesoCode) {
+        throw new GradleException(
+            "versionCode non allineato: ${defaultConfig.versionCode}, " +
+            "atteso ${_attesoCode} (da PWA ${pwaVersion} + castPatch ${castPatch}).")
     }
 
     buildFeatures {

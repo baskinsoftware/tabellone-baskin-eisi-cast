@@ -1,3 +1,3 @@
-* Mise à jour de la PWA du tableau intégrée (version 2026g)
-* Nouvelle numérotation des versions, alignée sur l'année de la PWA
-* Corrections et améliorations mineures
+* Mise à jour de la PWA du tableau intégrée (version 26.0)
+* Icône de l'application alignée sur celle du tableau
+* Numérotation des versions tenue en parallèle de celle de la PWA

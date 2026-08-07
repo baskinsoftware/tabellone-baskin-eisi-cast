@@ -30,18 +30,22 @@ Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
 **Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.0
-(incorpora la PWA Tabellone Baskin EISI 2026g)
+(incorpora la PWA Tabellone Baskin EISI 26.0)
 
-> ℹ️ **Numerazione `versione.sottoversione.patch` (dalla 26.0):** la **versione**
-> è allineata all'anno della PWA incorporata — la PWA numera per anno (`2026a`,
-> `2026b`, …), quindi per tutto il 2026 il Cast sta nella serie `26.x`, e dal
-> 2027 si passa a `27.x`. La **sottoversione** avanza ad ogni release (di norma
-> un nuovo re-sync della PWA); la **patch**, terza cifra omessa quando è `0`,
-> copre le modifiche al solo Cast (fix nativi, CI, dipendenze) che non cambiano
-> la PWA incorporata: `26.0 → 26.1 → 26.1.1`. Il `versionCode` segue
-> `anno*10000 + sottoversione*100 + patch` (es. `26.0 → 260000`, `26.1.1 →
-> 260101`), sempre crescente come richiede Google Play. La versione della PWA
-> non compare nel nome, ma resta leggibile via `BuildConfig.PWA_VERSION`.
+> ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
+> progetti con numerazioni **separate**, ma **tenute in parallelo**: il Cast
+> rispecchia la versione della PWA che incorpora — `PWA 26.0 → Cast 26.0`,
+> `PWA 26.1 → Cast 26.1`. Le modifiche al **solo Cast** (fix nativi, icone, CI,
+> dipendenze), a parità di PWA, aggiungono una terza cifra senza toccare le
+> prime due: `26.0 → 26.0.1 → 26.0.2`. Il `versionCode` segue
+> `major*10000 + minor*100 + castPatch` (es. `26.0 → 260000`, `26.0.1 →
+> 260001`, `26.1 → 260100`), sempre crescente come richiede Google Play.
+>
+> In `app/build.gradle` la fonte di verità è `pwaVersion` + `castPatch`; i
+> valori restano scritti come letterali (serve a F‑Droid, che li legge
+> staticamente), ma un **controllo automatico blocca la build** se non
+> rispettano la regola. La versione della PWA è anche leggibile a runtime via
+> `BuildConfig.PWA_VERSION`.
 >
 > <sub>Fino alla 1.3.3 si usava una "doppia versione" (`1.3.3 (PWA 2026d)`),
 > abbandonata perché poco conforme agli store.</sub>
