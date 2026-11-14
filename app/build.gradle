@@ -3,42 +3,48 @@ plugins {
 }
 
 android {
-    namespace 'it.uncledan.baskintabellonecast'
+    namespace 'it.uncledan.tabellonebaskineisicast'
     compileSdk 34
 
     // ── Versioni parallele Cast ⇄ PWA ───────────────────────────────────────
     // Cast e PWA hanno numerazioni SEPARATE ma TENUTE IN PARALLELO: il Cast
-    // rispecchia la versione della PWA che incorpora.
+    // rispecchia ESATTAMENTE la versione della PWA che incorpora, qualunque sia
+    // il numero di cifre.
     //
-    //   PWA 26.0   ->  Cast 26.0
-    //   PWA 26.1   ->  Cast 26.1
-    //   PWA 27.0   ->  Cast 27.0
+    //   PWA 26.0     ->  Cast 26.0
+    //   PWA 26.0.1   ->  Cast 26.0.1
+    //   PWA 26.1     ->  Cast 26.1
     //
     // Le modifiche al SOLO Cast (fix nativi, icone, CI, dipendenze), a parità
-    // di PWA, aggiungono una terza cifra e NON toccano le prime due:
+    // di PWA, aggiungono UN LIVELLO IN FONDO e non toccano le cifre della PWA,
+    // così il parallelismo resta leggibile:
     //
-    //   26.0  ->  26.0.1  ->  26.0.2      (PWA sempre 26.0)
+    //   PWA 26.0.1  ->  Cast 26.0.1  ->  26.0.1.1  ->  26.0.1.2
+    //   PWA 26.1    ->  Cast 26.1    ->  26.1.1    ->  26.1.2
     //
     // castPatch torna a 0 ad ogni nuovo re-sync della PWA.
     //
-    // versionCode = major*10000 + minor*100 + castPatch:
-    //   26.0    -> 260000        26.0.1 -> 260001
-    //   26.1    -> 260100        27.0   -> 270000
-    // Sempre crescente, come richiede Google Play.
+    // versionCode = major*10000 + minor*100 + pwaPatch*10 + castPatch
+    //   26.0      -> 260000        26.0.1   -> 260010
+    //   26.0.1.1  -> 260011        26.1     -> 260100
+    //   26.1.1    -> 260101        27.0     -> 270000
+    // Sempre crescente, come richiede Google Play. Le ultime due cifre sono lo
+    // spazio condiviso da pwaPatch (decine) e castPatch (unità): max 9 ciascuno,
+    // ampiamente sufficiente perché oltre si avanza di minor.
     //
     // NB: i tre valori qui sotto sono scritti come LETTERALI di proposito —
     // fdroidserver li legge staticamente da questo file, e un valore calcolato
     // non sarebbe riconosciuto. Per evitare disallineamenti a mano c'è il
     // controllo automatico più sotto: se un numero non torna, la build si ferma.
-    def pwaVersion = "26.0"   // versione della PWA incorporata in assets/pwa/
-    def castPatch  = 0        // >0 solo per modifiche al solo Cast
-    def appVersion = "26.0"   // = pwaVersion (+ ".castPatch" se castPatch > 0)
+    def pwaVersion = "26.0.1"   // versione della PWA incorporata in assets/pwa/
+    def castPatch  = 0          // >0 solo per modifiche al solo Cast
+    def appVersion = "26.0.1"   // = pwaVersion (+ ".castPatch" se castPatch > 0)
 
     defaultConfig {
-        applicationId "it.uncledan.baskintabellonecast"
+        applicationId "it.uncledan.tabellonebaskineisicast"
         minSdk 21
         targetSdk 34
-        versionCode 260000
+        versionCode 260010
         versionName appVersion
 
         // esposte al codice/BuildConfig per un'eventuale schermata "Info"
@@ -51,8 +57,16 @@ android {
     // partire da pwaVersion + castPatch. Sbagliare un numero durante un
     // re-sync diventa un errore di build, non un bug scoperto sullo store.
     def _pwaParts    = pwaVersion.tokenize('.').collect { it.toInteger() }
+    def _pwaMajor    = _pwaParts[0]
+    def _pwaMinor    = _pwaParts.size() > 1 ? _pwaParts[1] : 0
+    def _pwaPatch    = _pwaParts.size() > 2 ? _pwaParts[2] : 0
     def _attesoName  = castPatch == 0 ? pwaVersion : "${pwaVersion}.${castPatch}"
-    def _attesoCode  = _pwaParts[0] * 10000 + _pwaParts[1] * 100 + castPatch
+    def _attesoCode  = _pwaMajor * 10000 + _pwaMinor * 100 + _pwaPatch * 10 + castPatch
+    if (_pwaPatch > 9 || castPatch > 9) {
+        throw new GradleException(
+            "pwaPatch (${_pwaPatch}) e castPatch (${castPatch}) devono restare " +
+            "sotto 10: oltre, il versionCode non sarebbe piu' ordinabile.")
+    }
     if (appVersion != _attesoName) {
         throw new GradleException(
             "Versioni non allineate: appVersion='${appVersion}', ma da PWA " +

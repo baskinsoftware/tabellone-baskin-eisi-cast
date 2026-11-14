@@ -34,12 +34,12 @@ proprio le cose che F‑Droid rifiuta.
 - [x] **Dipendenze tutte FLOSS**, da repository Maven ammessi (tabella sopra)
 - [x] **Nessun blob binario** nel sorgente (solo `gradle/wrapper/gradle-wrapper.jar`, standard e gestito da F‑Droid)
 - [x] **Toolchain FLOSS**: Gradle + Android Gradle Plugin, compilabile da riga di comando senza IDE proprietari
-- [x] **Application ID su dominio proprio**: `it.uncledan.baskintabellonecast`, coerente con la convenzione richiesta da F‑Droid
+- [x] **Application ID su dominio proprio**: `it.uncledan.tabellonebaskineisicast`, coerente con la convenzione richiesta da F‑Droid
 - [x] **Tag git per ogni release** (`vX.Y.Z-pwa<versione>`), necessari per `UpdateCheckMode: Tags`
 - [x] **Firma compatibile**: il `signingConfig` si attiva solo se esistono le variabili d'ambiente del keystore. Nell'ambiente di build di F‑Droid non ci sono, quindi l'app viene compilata non firmata e **firmata da F‑Droid** con la propria chiave, come richiesto
 - [x] **Nessuna telemetria**: l'app opera solo in rete locale, non contatta server remoti
 - [x] **Metadati Fastlane** in `fastlane/metadata/android/` (it‑IT, en‑US, fr‑FR): titolo, descrizioni e changelog
-- [x] **Bozza del file di metadati** per fdroiddata in [`fdroid/it.uncledan.baskintabellonecast.yml`](fdroid/it.uncledan.baskintabellonecast.yml)
+- [x] **Bozza del file di metadati** per fdroiddata in [`fdroid/it.uncledan.tabellonebaskineisicast.yml`](fdroid/it.uncledan.tabellonebaskineisicast.yml)
 
 ---
 
@@ -102,9 +102,9 @@ Il vecchio `versionName` composto (`1.3.3 (PWA 2026d)`) era costruito per
 interpolazione da due variabili gradle e `fdroidserver` non riusciva a
 ricavarlo: l'aggiornamento automatico dei metadati non avrebbe funzionato.
 
-Dalla **26.0** il Cast tiene la propria numerazione **in parallelo** a quella
-della PWA incorporata (`PWA 26.0 → Cast 26.0`), con una terza cifra per le
-modifiche al solo Cast. Il `versionName` è una stringa semplice assegnata da una
+Dalla **26.0** l'app Android tiene la propria numerazione **in parallelo** a
+quella della PWA incorporata (`PWA 26.0 → app 26.0`), con una terza cifra per le
+modifiche alla sola app. Il `versionName` è una stringa semplice assegnata da una
 variabile
 gradle, che `fdroidserver` sa leggere: `AutoUpdateMode: Version` è quindi
 impostato nella bozza dei metadati. Conviene comunque **verificare i primi
@@ -116,14 +116,14 @@ aggiornamenti automatici** prima di considerarli affidabili.
 
 1. Verificare che l'ultima release sia taggata e che il tag compili da solo:
    ```bash
-   git clone https://github.com/UncleDan/tabellone-baskin-eisi-cast.git
+   git clone https://github.com/baskinsoftware/tabellone-baskin-eisi-cast.git
    cd tabellone-baskin-eisi-cast
-   git checkout v26.0
+   git checkout v26.0.1
    ./gradlew assembleRelease
    ```
    Deve concludersi senza chiedere keystore né credenziali.
 2. Aprire una **merge request** su [fdroiddata](https://gitlab.com/fdroid/fdroiddata)
-   aggiungendo `metadata/it.uncledan.baskintabellonecast.yml`, partendo dalla
+   aggiungendo `metadata/it.uncledan.tabellonebaskineisicast.yml`, partendo dalla
    bozza in [`fdroid/`](fdroid/).
 3. In alternativa, aprire prima una *Request For Packaging* nel
    [tracker di fdroiddata](https://gitlab.com/fdroid/fdroiddata/-/issues) e

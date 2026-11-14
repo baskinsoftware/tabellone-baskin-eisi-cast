@@ -1,0 +1,2 @@
+* Mise à jour de la PWA du tableau intégrée (version 26.0.1)
+* Code source et signalements déplacés vers l'organisation baskinsoftware

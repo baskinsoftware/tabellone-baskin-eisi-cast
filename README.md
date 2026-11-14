@@ -1,6 +1,6 @@
 # Tabellone Baskin EISI (Cast) — app Android
 
-> ⚠️ **Work in progress.** Questa versione Android (Cast) è in **sviluppo
+> ⚠️ **Work in progress.** Questa versione Android è in **sviluppo
 > attivo**: funzioni e comportamenti possono cambiare, e alcune parti non sono
 > ancora state provate su tutti i dispositivi. Per l'uso stabile e immediato c'è
 > la **PWA** (vedi *Progetti collegati*).
@@ -29,17 +29,19 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.0
-(incorpora la PWA Tabellone Baskin EISI 26.0)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.0.1
+(incorpora la PWA Tabellone Baskin EISI 26.0.1)
 
 > ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
 > progetti con numerazioni **separate**, ma **tenute in parallelo**: il Cast
-> rispecchia la versione della PWA che incorpora — `PWA 26.0 → Cast 26.0`,
-> `PWA 26.1 → Cast 26.1`. Le modifiche al **solo Cast** (fix nativi, icone, CI,
-> dipendenze), a parità di PWA, aggiungono una terza cifra senza toccare le
-> prime due: `26.0 → 26.0.1 → 26.0.2`. Il `versionCode` segue
-> `major*10000 + minor*100 + castPatch` (es. `26.0 → 260000`, `26.0.1 →
-> 260001`, `26.1 → 260100`), sempre crescente come richiede Google Play.
+> rispecchia **esattamente** la versione della PWA che incorpora, qualunque sia
+> il numero di cifre — `PWA 26.0 → Cast 26.0`, `PWA 26.0.1 → Cast 26.0.1`. Le
+> modifiche al **solo Cast** (fix nativi, icone, CI, dipendenze), a parità di
+> PWA, aggiungono **un livello in fondo** senza toccare le cifre della PWA:
+> `26.0.1 → 26.0.1.1 → 26.0.1.2`. Il `versionCode` segue
+> `major*10000 + minor*100 + pwaPatch*10 + castPatch` (es. `26.0 → 260000`,
+> `26.0.1 → 260010`, `26.0.1.1 → 260011`, `26.1 → 260100`), sempre crescente
+> come richiede Google Play.
 >
 > In `app/build.gradle` la fonte di verità è `pwaVersion` + `castPatch`; i
 > valori restano scritti come letterali (serve a F‑Droid, che li legge
@@ -58,11 +60,11 @@ Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 
 Il Tabellone Baskin esiste in **due repository**, che lavorano insieme:
 
-- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/UncleDan/tabellone-baskin-eisi-pwa)**:
+- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/baskinsoftware/tabellone-baskin-eisi-pwa)**:
   il segnapunti web, installabile e offline, ospitabile su GitHub Pages
   (online su <https://www.uncledan.it/tabellone-baskin/>). È anche il *display*
   via browser di questa app.
-- **App Android (Cast)** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/UncleDan/tabellone-baskin-eisi-cast)** *(questo, work in progress)*:
+- **App Android (Cast)** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/baskinsoftware/tabellone-baskin-eisi-cast)** *(questo, work in progress)*:
   incorpora la stessa PWA e aggiunge i ruoli, la scoperta di rete e la
   presentazione su TV.
 
@@ -111,7 +113,7 @@ Il rendering del tabellone è **sempre la stessa PWA** in modalità
 ## Componenti nativi
 
 ```
-app/src/main/java/it/uncledan/baskintabellonecast/
+app/src/main/java/it/uncledan/tabellonebaskineisicast/
 ├── RoleActivity.java       primo avvio: scelta ruolo + instradamento (LAUNCHER)
 ├── Roles.java              modello ruoli + persistenza + rilevamento TV/telefono
 ├── MainActivity.java       ruolo Tabellone: WebView comandi + server + NSD + QR
@@ -184,10 +186,10 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ## Verso il Play Store
 
-- `applicationId` **immutabile**: `it.uncledan.baskintabellonecast`.
+- `applicationId` **immutabile**: `it.uncledan.tabellonebaskineisicast`.
 - Cleartext HTTP consentito ma l'app è **solo LAN** (nessun traffico internet).
 - Per la sezione Android TV servirà un **banner** e gli screenshot dedicati.
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.0
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.0.1

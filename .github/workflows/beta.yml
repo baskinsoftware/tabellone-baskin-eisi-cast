@@ -44,10 +44,10 @@ jobs:
           mkdir -p out
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
           cp app/build/outputs/apk/release/app-release-unsigned.apk \
-             "out/TabelloneBaskinCast-beta-${GITHUB_SHA::7}-unsigned.apk"
+             "out/TabelloneBaskinEISI-Cast-beta-${GITHUB_SHA::7}-unsigned.apk"
 
       - name: Carica l'APK beta come artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TabelloneBaskinCast-beta-${{ env.SHORT_SHA }}-unsigned
+          name: TabelloneBaskinEISI-Cast-beta-${{ env.SHORT_SHA }}-unsigned
           path: out/*.apk

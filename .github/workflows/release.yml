@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p out
           cp app/build/outputs/apk/release/app-release.apk \
-             "out/TabelloneBaskinCast-${GITHUB_REF_NAME}-signed.apk"
+             "out/TabelloneBaskinEISI-Cast-${GITHUB_REF_NAME}-signed.apk"
 
       - name: Pulisci keystore
         if: always()

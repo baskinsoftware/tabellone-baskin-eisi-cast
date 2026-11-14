@@ -81,7 +81,7 @@ jobs:
         run: |
           mkdir -p out
           cp app/build/outputs/bundle/release/app-release.aab \
-             "out/TabelloneBaskinCast-${VERSION_LABEL}-${TRACK}-signed.aab"
+             "out/TabelloneBaskinEISI-Cast-${VERSION_LABEL}-${TRACK}-signed.aab"
 
       - name: Pulisci keystore
         if: always()
@@ -90,5 +90,5 @@ jobs:
       - name: Carica l'AAB come artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TabelloneBaskinCast-${{ env.VERSION_LABEL }}-${{ env.TRACK }}-signed
+          name: TabelloneBaskinEISI-Cast-${{ env.VERSION_LABEL }}-${{ env.TRACK }}-signed
           path: out/*.aab
