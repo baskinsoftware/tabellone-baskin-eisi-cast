@@ -28,9 +28,9 @@ RepoType: git
 Repo: https://github.com/baskinsoftware/tabellone-baskin-eisi-cast.git
 
 Builds:
-  - versionName: '26.0.1'
-    versionCode: 260010
-    commit: v26.0.1
+  - versionName: '26.0'
+    versionCode: 260000
+    commit: v26.0
     subdir: app
     gradle:
       - yes
@@ -47,7 +47,9 @@ Builds:
 # metadati può funzionare. Resta comunque prudente verificare i primi
 # aggiornamenti automatici prima di fidarsi del tutto.
 AutoUpdateMode: Version
+# Il filtro esclude di proposito i tag delle beta (es. v26.1b1), che contengono
+# una lettera: F-Droid impacchetta solo le release finali.
 UpdateCheckMode: Tags ^v[0-9.]+$
 
-CurrentVersion: '26.0.1'
-CurrentVersionCode: 260010
+CurrentVersion: '26.0'
+CurrentVersionCode: 260000

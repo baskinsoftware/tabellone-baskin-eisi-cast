@@ -12,7 +12,7 @@ Requisiti: JDK 17 e Android SDK (`compileSdk 34`). Dalla cartella del progetto:
 ```bash
 # APK di debug (firmato con la chiave di debug di Android) — versione "-beta"
 ./gradlew assembleDebug
-# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.0.1-beta)
+# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.1b1-beta)
 
 # APK release (firmato solo se imposti le variabili keystore, vedi §3)
 ./gradlew assembleRelease
@@ -31,12 +31,13 @@ Nella cartella `.github/workflows/`:
 
 | Workflow | File | Quando parte | Cosa produce |
 |---|---|---|---|
-| **Release APK** | `release.yml` | push di un tag `v*` | APK **stabile firmato**, allegato alla Release |
-| **Beta APK (unsigned)** | `beta.yml` | "Run workflow" manuale, o push sul branch `beta` | APK release **non firmato** come *artifact* del run (niente segreti) |
+| **App Android** | `app-android.yml` | push su `beta` o `main`, push di un tag `v*`, o manuale | APK **debug** sempre, APK **release firmato** se ci sono i segreti; su `beta` aggiorna la pre-release `app-beta`, su un tag allega gli APK alla Release |
+| **Release** | `release.yml` | solo manuale (Actions → Release → Run workflow) | crea la Release (titolo e testo dal README, tag dalla versione) e avvia `app-android.yml` sul nuovo tag |
 | **Prepara AAB per Google Play** | `play-prepare.yml` | push di un tag `v*`, o manuale | **AAB firmato** come *artifact*, per l'upload manuale su Play Console |
 
-Idea: `beta.yml` per i test rapidi (nessuna configurazione), `release.yml` quando
-pubblichi una versione vera.
+Idea: si lavora su `beta` e si prende l'APK dalla pre-release `app-beta`; quando
+la versione è buona si lancia **Release**, che fa tag, Release e APK definitivi.
+Una versione con `b` (es. `26.1b1`) diventa pre-release automaticamente.
 
 ---
 
@@ -82,13 +83,13 @@ variabili d'ambiente `KEYSTORE_FILE/…`, la build release **non** viene firmata
 
 ```bash
 # porta la versione avanti in app/build.gradle (versionCode + versionName)
-git commit -am "Release 26.0.1"
-git tag -a v26.0.1 -m "Tabellone Baskin EISI (Cast) 26.0.1"
+git commit -am "Release 26.1"
+git tag -a v26.1 -m "Tabellone Baskin EISI (Cast) 26.1"
 git push origin main --tags
 ```
 
-Il push del tag `v26.0.1` avvia `release.yml`, che allega alla Release
-`TabelloneBaskinEISI-Cast-v26.0.1-signed.apk` (stabile firmato), e `play-prepare.yml`,
+Il push del tag `v26.1` avvia `app-android.yml`, che allega alla Release
+`Tabellone-Baskin-EISI-Cast-26.1.apk` (stabile firmato), e `play-prepare.yml`,
 che prepara l'AAB per Google Play come artifact del run.
 
 > Sulla numerazione delle versioni (`26.0`, `26.0.1`, `26.0.1.1`, …) vedi il riquadro

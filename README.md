@@ -29,8 +29,8 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.0.1
-(incorpora la PWA Tabellone Baskin EISI 26.0.1)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1b1
+(beta; incorpora ancora la PWA Tabellone Baskin EISI 26.0.1)
 
 > ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
 > progetti con numerazioni **separate**, ma **tenute in parallelo**: il Cast
@@ -43,7 +43,15 @@ Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 > `26.0.1 → 260010`, `26.0.1.1 → 260011`, `26.1 → 260100`), sempre crescente
 > come richiede Google Play.
 >
-> In `app/build.gradle` la fonte di verità è `pwaVersion` + `castPatch`; i
+> Le **versioni di prova** usano solo la notazione `bN` attaccata alla versione
+> di destinazione (`26.1b1`, `26.1b2`), mai suffissi tipo `26.1b1.1`, e portano
+> il `versionCode` della versione di destinazione: si installano a mano e non
+> passano dagli store. Durante una beta la PWA incorporata può essere ancora
+> quella precedente: `targetPwa` dice a quale PWA punta la versione, e il
+> controllo avvisa invece di bloccare finché la beta non diventa release finale.
+>
+> In `app/build.gradle` la fonte di verità è `pwaVersion`, `targetPwa` e
+> `castPatch`; i
 > valori restano scritti come letterali (serve a F‑Droid, che li legge
 > staticamente), ma un **controllo automatico blocca la build** se non
 > rispettano la regola. La versione della PWA è anche leggibile a runtime via
@@ -179,10 +187,19 @@ Il manifest dichiara `touchscreen` e `leanback` **non richiesti** e registra il
 
 ## Pubblicazione dell'APK su GitHub (automatica)
 
-È incluso il workflow **`.github/workflows/release.yml`**: al push di un tag
-`v*` compila, **firma** e allega l'APK alla Release. Richiede questi *Secrets*
-nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
-`KEY_PASSWORD`. La chiave non entra mai nel repo.
+Due workflow lavorano insieme:
+
+- **`.github/workflows/app-android.yml`** compila gli APK. Al push su `beta`
+  aggiorna la pre-release **`app-beta`** (sempre la più recente); al push di un
+  tag `v*` allega gli APK alla Release di quel tag; in ogni caso li lascia anche
+  tra gli *artifact* dell'esecuzione. Senza segreti produce il solo APK di
+  **debug** (installabile); con i segreti `KEYSTORE_BASE64`,
+  `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` produce anche l'APK
+  **release firmato**. La chiave non entra mai nel repo.
+- **`.github/workflows/release.yml`** crea la Release a mano (Actions → Release
+  → Run workflow): titolo e testo vengono dal README, il tag dalla versione
+  indicata, e subito dopo avvia `app-android.yml` sul nuovo tag. Una versione
+  che contiene `b` (es. `26.1b1`) viene segnata come pre-release da sola.
 
 ## Verso il Play Store
 
@@ -192,4 +209,4 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.0.1
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1b1
