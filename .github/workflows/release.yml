@@ -2,6 +2,10 @@ name: Release APK
 
 # Compila, firma e allega l'APK alla Release di GitHub quando pubblichi un tag "v*".
 #
+# Titolo e testo della Release seguono la regola del progetto: titolo = primo
+# titolo "# " del README + spazio + tag (es. "Tabellone Baskin EISI (Cast) v26.1"),
+# testo = il README dalla prima riga non vuota dopo quel titolo.
+#
 # Segreti richiesti nel repository (Settings → Secrets and variables → Actions):
 #   KEYSTORE_BASE64     il tuo keystore .jks codificato in base64
 #                       (genera con:  base64 -w0 mio.jks   oppure  base64 mio.jks )
@@ -58,8 +62,27 @@ jobs:
         if: always()
         run: rm -f "$RUNNER_TEMP/keystore.jks"
 
+      - name: Titolo e testo della Release dal README
+        id: note
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Regola: titolo = primo titolo "# " del README + spazio + tag;
+          # testo = il README dalla prima riga non vuota dopo quel titolo.
+          [ -f README.md ] || { echo "::error::README.md non trovato"; exit 1; }
+          RIGA="$(grep -n -m1 -E '^# ' README.md | cut -d: -f1 || true)"
+          [ -n "$RIGA" ] || { echo "::error::Nessun titolo '# ' in README.md"; exit 1; }
+          TITOLO="$(sed -n "${RIGA}p" README.md | sed -E 's/^# +//; s/\r$//; s/[[:space:]]+$//')"
+          NOTE="$RUNNER_TEMP/note-release.md"
+          tail -n +"$((RIGA + 1))" README.md \
+            | awk 'BEGIN{p=0} { if (!p && $0 ~ /^[[:space:]\r]*$/) next; p=1; print }' > "$NOTE"
+          echo "nome=${TITOLO} ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          echo "note=$NOTE" >> "$GITHUB_OUTPUT"
+          echo "- **Titolo Release:** ${TITOLO} ${GITHUB_REF_NAME}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Allega l'APK alla Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ steps.note.outputs.nome }}
+          body_path: ${{ steps.note.outputs.note }}
           files: out/*.apk
-          generate_release_notes: true

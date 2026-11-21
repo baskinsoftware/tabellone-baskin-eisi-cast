@@ -15,8 +15,10 @@
 # altri workflow vengono avviati esplicitamente qui sotto, e per questo devono
 # avere anche il trigger «workflow_dispatch».
 #
-# Le note della Release restano quelle automatiche di GitHub: non le scrive
-# questo workflow, le genera release.yml con «generate_release_notes».
+# Titolo e testo della Release non li scrive questo workflow: li compone
+# release.yml dal README, con la regola del progetto (titolo = primo titolo
+# «# » del README + spazio + tag). Così la regola sta in un punto solo e vale
+# anche quando il tag viene inviato a mano.
 name: Crea release
 
 on:
@@ -44,7 +46,7 @@ on:
       play_store:
         description: "AAB per Google Play (play-prepare.yml)"
         required: false
-        default: false
+        default: true
         type: boolean
       altri_workflow:
         description: "Altri workflow da avviare sul nuovo tag, separati da spazio (vuoto = nessuno)"
