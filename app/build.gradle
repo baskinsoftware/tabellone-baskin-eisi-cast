@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'it.uncledan.tabellonebaskineisicast'
+    namespace 'io.github.baskinsoftware.tabellonebaskineisicast'
     compileSdk 34
 
     // ── Versioni parallele Cast ⇄ PWA ───────────────────────────────────────
@@ -50,11 +50,11 @@ android {
     def targetPwa  = "26.1"     // PWA che questa versione rispecchia (= pwaVersion
                                 // dopo il re-sync; durante una beta può precederlo)
     def castPatch  = 0          // >0 solo per modifiche al solo Cast
-    def beta       = 2          // 0 = release finale; N>0 = beta "bN"
-    def appVersion = "26.1b2"   // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
+    def beta       = 3          // 0 = release finale; N>0 = beta "bN"
+    def appVersion = "26.1b3"   // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
 
     defaultConfig {
-        applicationId "it.uncledan.tabellonebaskineisicast"
+        applicationId "io.github.baskinsoftware.tabellonebaskineisicast"
         minSdk 21
         targetSdk 34
         versionCode 260100

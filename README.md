@@ -29,7 +29,7 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1b2
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1b3
 (beta; incorpora la PWA Tabellone Baskin EISI 26.1)
 
 > ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
@@ -121,7 +121,7 @@ Il rendering del tabellone è **sempre la stessa PWA** in modalità
 ## Componenti nativi
 
 ```
-app/src/main/java/it/uncledan/tabellonebaskineisicast/
+app/src/main/java/io.github.baskinsoftware.tabellonebaskineisicast/
 ├── RoleActivity.java       primo avvio: scelta ruolo + instradamento (LAUNCHER)
 ├── Roles.java              modello ruoli + persistenza + rilevamento TV/telefono
 ├── MainActivity.java       ruolo Tabellone: WebView comandi + server + NSD + QR
@@ -187,26 +187,17 @@ Il manifest dichiara `touchscreen` e `leanback` **non richiesti** e registra il
 
 ## Pubblicazione dell'APK su GitHub (automatica)
 
-Due workflow lavorano insieme:
-
-- **`.github/workflows/app-android.yml`** compila gli APK. Al push su `beta`
-  aggiorna la pre-release **`app-beta`** (sempre la più recente); al push di un
-  tag `v*` allega gli APK alla Release di quel tag; in ogni caso li lascia anche
-  tra gli *artifact* dell'esecuzione. Senza segreti produce il solo APK di
-  **debug** (installabile); con i segreti `KEYSTORE_BASE64`,
-  `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` produce anche l'APK
-  **release firmato**. La chiave non entra mai nel repo.
-- **`.github/workflows/release.yml`** crea la Release a mano (Actions → Release
-  → Run workflow): titolo e testo vengono dal README, il tag dalla versione
-  indicata, e subito dopo avvia `app-android.yml` sul nuovo tag. Una versione
-  che contiene `b` (es. `26.1b1`) viene segnata come pre-release da sola.
+È incluso il workflow **`.github/workflows/release.yml`**: al push di un tag
+`v*` compila, **firma** e allega l'APK alla Release. Richiede questi *Secrets*
+nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
+`KEY_PASSWORD`. La chiave non entra mai nel repo.
 
 ## Verso il Play Store
 
-- `applicationId` **immutabile**: `it.uncledan.tabellonebaskineisicast`.
+- `applicationId` **immutabile**: `io.github.baskinsoftware.tabellonebaskineisicast`.
 - Cleartext HTTP consentito ma l'app è **solo LAN** (nessun traffico internet).
 - Per la sezione Android TV servirà un **banner** e gli screenshot dedicati.
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1b2
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1b3

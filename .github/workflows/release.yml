@@ -1,180 +1,65 @@
-# release.yml by Daniele Lolli (UncleDan) feat. Claude AI - Release 1.2 - 2026-11-21 20-53-16
+name: Release APK
+
+# Compila, firma e allega l'APK alla Release di GitHub quando pubblichi un tag "v*".
 #
-# Crea una release GitHub con lancio manuale (Actions → Release → Run workflow).
-# Regola:
-#   - titolo = primo titolo "# " del README + spazio + <prefisso><versione>
-#   - tag    = <prefisso><versione>                  (es. v26.1)
-#   - testo  = README dalla prima riga non vuota dopo il titolo, fino alla fine
-# Nessun percorso fisso: README, ramo e prefisso sono parametri; il workflow della
-# app Android è nella variabile WF_ANDROID qui sotto (in "env"), così il file si
-# riusa in altri repository cambiando solo quella riga.
+# Segreti richiesti nel repository (Settings → Secrets and variables → Actions):
+#   KEYSTORE_BASE64     il tuo keystore .jks codificato in base64
+#                       (genera con:  base64 -w0 mio.jks   oppure  base64 mio.jks )
+#   KEYSTORE_PASSWORD   password dello store
+#   KEY_ALIAS           alias della chiave
+#   KEY_PASSWORD        password della chiave
 #
-# Nota: un tag creato con GITHUB_TOKEN non avvia gli altri workflow "on: push tags".
-# Per questo l'interruttore "App Android" lo avvia sul nuovo tag; in "altri_workflow"
-# se ne possono aggiungere altri (per esempio play-prepare.yml per l'AAB di Google
-# Play, che in questo repository non è legato alla release).
-name: Release
+# La chiave NON entra mai nel repository: viene ricostruita in RAM durante la build.
 
 on:
-  workflow_dispatch:
-    inputs:
-      versione:
-        description: "Versione, senza prefisso (es. 26.1 oppure 26.1b1)"
-        required: true
-        type: string
-      ramo:
-        description: "Ramo o commit da cui creare la release"
-        required: false
-        default: "main"
-        type: string
-      readme:
-        description: "Percorso del README nel repository"
-        required: false
-        default: "README.md"
-        type: string
-      prefisso_tag:
-        description: "Prefisso del tag e del titolo"
-        required: false
-        default: "v"
-        type: string
-      prerelease:
-        description: "Segna come pre-release (automatico se la versione contiene 'b')"
-        required: false
-        default: false
-        type: boolean
-      bozza:
-        description: "Crea come bozza (non pubblicata)"
-        required: false
-        default: false
-        type: boolean
-      app_android:
-        description: "App Android"
-        required: false
-        default: true
-        type: boolean
-      altri_workflow:
-        description: "Altri workflow da avviare sul nuovo tag, separati da spazio (vuoto = nessuno)"
-        required: false
-        default: ""
-        type: string
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
-  actions: write
-
-env:
-  WF_ANDROID: app-android.yml   # workflow della app Android
-
-concurrency:
-  group: release-${{ github.repository }}
-  cancel-in-progress: false
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      VERSIONE: ${{ inputs.versione }}
-      RAMO: ${{ inputs.ramo }}
-      README_PATH: ${{ inputs.readme }}
-      PREFISSO: ${{ inputs.prefisso_tag }}
-      PRERELEASE: ${{ inputs.prerelease }}
-      BOZZA: ${{ inputs.bozza }}
-      APP_ANDROID: ${{ inputs.app_android }}
-      ALTRI_WORKFLOW: ${{ inputs.altri_workflow }}
     steps:
-      - name: Checkout del ramo
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          ref: ${{ inputs.ramo }}
-          fetch-depth: 1
+          distribution: temurin
+          java-version: '17'
 
-      - name: Titolo, tag e testo dal README
-        id: dati
-        shell: bash
-        run: |
-          set -euo pipefail
-          VERSIONE="$(printf '%s' "$VERSIONE" | tr -d '[:space:]')"
-          VERSIONE="${VERSIONE#"$PREFISSO"}"   # accetta anche "v26.1"
-          [ -n "$VERSIONE" ] || { echo "::error::Versione vuota"; exit 1; }
-          [ -f "$README_PATH" ] || { echo "::error::README non trovato: $README_PATH (ramo $RAMO)"; exit 1; }
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-          TAG="${PREFISSO}${VERSIONE}"
-          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            echo "::error::Il tag $TAG esiste già"; exit 1
-          fi
+      - name: Decodifica keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/keystore.jks"
 
-          # Una versione con "b" (es. 26.1b1) è per definizione una pre-release
-          PRE="$PRERELEASE"
-          case "$VERSIONE" in *b*) PRE=true ;; esac
-
-          # Segnala (senza bloccare) se la versione non corrisponde ad appVersion
-          if [ -f app/build.gradle ]; then
-            APP_VER="$(sed -nE 's/^[[:space:]]*def appVersion[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' app/build.gradle | head -1)"
-            if [ -n "$APP_VER" ] && [ "$APP_VER" != "$VERSIONE" ]; then
-              echo "::warning::appVersion in app/build.gradle è $APP_VER, la release è $VERSIONE"
-            fi
-          fi
-
-          # riga del primo titolo "# " (non "## ")
-          RIGA_TITOLO="$(grep -n -m1 -E '^# ' "$README_PATH" | cut -d: -f1 || true)"
-          [ -n "$RIGA_TITOLO" ] || { echo "::error::Nessun titolo '# ' in $README_PATH"; exit 1; }
-          TITOLO="$(sed -n "${RIGA_TITOLO}p" "$README_PATH" | sed -E 's/^# +//; s/[[:space:]]+$//; s/\r$//')"
-          NOME="$TITOLO $TAG"
-
-          # testo: dalla prima riga non vuota dopo il titolo fino alla fine
-          NOTE_FILE="$RUNNER_TEMP/note-release.md"
-          tail -n +"$((RIGA_TITOLO + 1))" "$README_PATH" \
-            | awk 'BEGIN{p=0} { if (!p && $0 ~ /^[[:space:]\r]*$/) next; p=1; print }' > "$NOTE_FILE"
-
-          {
-            echo "tag=$TAG"
-            echo "nome=$NOME"
-            echo "note=$NOTE_FILE"
-            echo "pre=$PRE"
-          } >> "$GITHUB_OUTPUT"
-
-          {
-            echo "### Release da creare"
-            echo "- **Titolo:** $NOME"
-            echo "- **Tag:** $TAG"
-            echo "- **Ramo:** $RAMO ($(git rev-parse --short HEAD))"
-            echo "- **Pre-release:** $PRE"
-            echo "- **Testo:** $README_PATH dalla riga $(( RIGA_TITOLO + 1 )) in poi (prima riga non vuota)"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Crea la release
-        shell: bash
+      - name: Build APK release firmato
         env:
-          TAG: ${{ steps.dati.outputs.tag }}
-          NOME: ${{ steps.dati.outputs.nome }}
-          NOTE_FILE: ${{ steps.dati.outputs.note }}
-          PRE: ${{ steps.dati.outputs.pre }}
+          KEYSTORE_FILE: ${{ runner.temp }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          set -euo pipefail
-          OPZ=()
-          [ "$PRE" = "true" ] && OPZ+=(--prerelease)
-          [ "$BOZZA" = "true" ] && OPZ+=(--draft)
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$(git rev-parse HEAD)" \
-            --title "$NOME" \
-            --notes-file "$NOTE_FILE" \
-            "${OPZ[@]}"
-          echo "- **Release:** $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG" >> "$GITHUB_STEP_SUMMARY"
+          chmod +x ./gradlew
+          ./gradlew --no-daemon assembleRelease
 
-      - name: Avvia i workflow sul nuovo tag
-        if: ${{ !inputs.bozza && (inputs.app_android || inputs.altri_workflow != '') }}
-        shell: bash
-        env:
-          TAG: ${{ steps.dati.outputs.tag }}
+      - name: Rinomina APK con la versione del tag
         run: |
-          set -euo pipefail
-          LISTA=""
-          [ "$APP_ANDROID" = "true" ] && LISTA="$LISTA $WF_ANDROID"
-          LISTA="$LISTA $ALTRI_WORKFLOW"
-          for WF in $LISTA; do
-            echo "Avvio $WF su $TAG"
-            gh workflow run "$WF" --repo "$GITHUB_REPOSITORY" --ref "$TAG"
-            echo "- **Avviato:** $WF su $TAG" >> "$GITHUB_STEP_SUMMARY"
-          done
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk \
+             "out/TabelloneBaskinCast-${GITHUB_REF_NAME}-signed.apk"
+
+      - name: Pulisci keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/keystore.jks"
+
+      - name: Allega l'APK alla Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*.apk
+          generate_release_notes: true

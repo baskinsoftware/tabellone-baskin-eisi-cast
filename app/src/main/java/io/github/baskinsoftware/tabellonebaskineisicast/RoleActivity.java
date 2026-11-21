@@ -1,4 +1,4 @@
-package it.uncledan.tabellonebaskineisicast;
+package io.github.baskinsoftware.tabellonebaskineisicast;
 
 import android.app.Activity;
 import android.content.Intent;

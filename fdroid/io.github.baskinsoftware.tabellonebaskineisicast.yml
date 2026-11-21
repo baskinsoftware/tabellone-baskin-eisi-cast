@@ -5,7 +5,7 @@
 # Il file "vero" va inviato come merge request al repository dei metadati:
 #
 #     https://gitlab.com/fdroid/fdroiddata
-#     percorso: metadata/it.uncledan.tabellonebaskineisicast.yml
+#     percorso: metadata/io.github.baskinsoftware.tabellonebaskineisicast.yml
 #
 # Lo teniamo qui versionato per non doverlo riscrivere ad ogni release e per
 # tenere traccia di cosa è stato dichiarato a F-Droid.

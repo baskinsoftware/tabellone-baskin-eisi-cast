@@ -34,12 +34,12 @@ proprio le cose che F‑Droid rifiuta.
 - [x] **Dipendenze tutte FLOSS**, da repository Maven ammessi (tabella sopra)
 - [x] **Nessun blob binario** nel sorgente (solo `gradle/wrapper/gradle-wrapper.jar`, standard e gestito da F‑Droid)
 - [x] **Toolchain FLOSS**: Gradle + Android Gradle Plugin, compilabile da riga di comando senza IDE proprietari
-- [x] **Application ID su dominio proprio**: `it.uncledan.tabellonebaskineisicast`, coerente con la convenzione richiesta da F‑Droid
+- [x] **Application ID su dominio proprio**: `io.github.baskinsoftware.tabellonebaskineisicast`, coerente con la convenzione richiesta da F‑Droid
 - [x] **Tag git per ogni release** (`vX.Y.Z-pwa<versione>`), necessari per `UpdateCheckMode: Tags`
 - [x] **Firma compatibile**: il `signingConfig` si attiva solo se esistono le variabili d'ambiente del keystore. Nell'ambiente di build di F‑Droid non ci sono, quindi l'app viene compilata non firmata e **firmata da F‑Droid** con la propria chiave, come richiesto
 - [x] **Nessuna telemetria**: l'app opera solo in rete locale, non contatta server remoti
 - [x] **Metadati Fastlane** in `fastlane/metadata/android/` (it‑IT, en‑US, fr‑FR): titolo, descrizioni e changelog
-- [x] **Bozza del file di metadati** per fdroiddata in [`fdroid/it.uncledan.tabellonebaskineisicast.yml`](fdroid/it.uncledan.tabellonebaskineisicast.yml)
+- [x] **Bozza del file di metadati** per fdroiddata in [`fdroid/io.github.baskinsoftware.tabellonebaskineisicast.yml`](fdroid/io.github.baskinsoftware.tabellonebaskineisicast.yml)
 
 ---
 
@@ -123,7 +123,7 @@ aggiornamenti automatici** prima di considerarli affidabili.
    ```
    Deve concludersi senza chiedere keystore né credenziali.
 2. Aprire una **merge request** su [fdroiddata](https://gitlab.com/fdroid/fdroiddata)
-   aggiungendo `metadata/it.uncledan.tabellonebaskineisicast.yml`, partendo dalla
+   aggiungendo `metadata/io.github.baskinsoftware.tabellonebaskineisicast.yml`, partendo dalla
    bozza in [`fdroid/`](fdroid/).
 3. In alternativa, aprire prima una *Request For Packaging* nel
    [tracker di fdroiddata](https://gitlab.com/fdroid/fdroiddata/-/issues) e
