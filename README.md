@@ -1,4 +1,7 @@
-# Tabellone Baskin EISI (Cast) — app Android
+# Tabellone Baskin EISI (Cast)
+
+App Android che incorpora il tabellone segnapunti per il Baskin e lo trasmette
+su un televisore in rete locale.
 
 > ⚠️ **Work in progress.** Questa versione Android è in **sviluppo
 > attivo**: funzioni e comportamenti possono cambiare, e alcune parti non sono
