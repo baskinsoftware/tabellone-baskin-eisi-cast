@@ -93,7 +93,7 @@ Il push del tag `v26.1` avvia `app-android.yml`, che allega alla Release
 che prepara l'AAB per Google Play come artifact del run.
 
 > Sulla numerazione delle versioni (`26.0`, `26.0.1`, `26.0.1.1`, …) vedi il riquadro
-> "Versione unica, derivata dalla PWA" nel [`README.md`](README.md).
+> "Versioni parallele Cast ⇄ PWA" nel [`README.md`](README.md).
 
 ---
 
