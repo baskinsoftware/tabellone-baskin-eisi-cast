@@ -1,0 +1,143 @@
+# crea-release.yml by Daniele Lolli (UncleDan) feat. Claude AI - Release 1.0 - 2026-11-21 23-26-37
+#
+# Crea il tag di una versione e avvia i workflow scelti, con lancio manuale
+# (Actions → Crea release → Run workflow). Due interruttori:
+#   - «Release APK»          -> avvia release.yml      (APK firmato + Release su GitHub)
+#   - «AAB per Google Play»  -> avvia play-prepare.yml (AAB firmato come artefatto)
+# più un campo libero per eventuali altri workflow.
+#
+# Perché esiste: il tag lo crea questo workflow col proprio GITHUB_TOKEN. Serve
+# quando chi lavora sul repository può inviare rami ma non tag (è il caso delle
+# sessioni Claude, dove il push di un tag viene rifiutato con HTTP 403).
+#
+# ATTENZIONE, regola di GitHub: un tag creato con GITHUB_TOKEN NON fa partire i
+# workflow «on: push: tags» (serve a evitare i cicli infiniti). Per questo gli
+# altri workflow vengono avviati esplicitamente qui sotto, e per questo devono
+# avere anche il trigger «workflow_dispatch».
+#
+# Titolo e testo della Release non li scrive questo workflow: li compone
+# release.yml dal README, con la regola del progetto (titolo = primo titolo
+# «# » del README + spazio + tag). Così la regola sta in un punto solo e vale
+# anche quando il tag viene inviato a mano.
+name: Crea release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versione:
+        description: "Versione, senza prefisso (es. 26.1 oppure 26.1b4)"
+        required: true
+        type: string
+      ramo:
+        description: "Ramo o commit da cui creare il tag"
+        required: false
+        default: "main"
+        type: string
+      prefisso_tag:
+        description: "Prefisso del tag"
+        required: false
+        default: "v"
+        type: string
+      release:
+        description: "Release APK (release.yml)"
+        required: false
+        default: true
+        type: boolean
+      play_store:
+        description: "AAB per Google Play (play-prepare.yml)"
+        required: false
+        default: true
+        type: boolean
+      altri_workflow:
+        description: "Altri workflow da avviare sul nuovo tag, separati da spazio (vuoto = nessuno)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: crea-release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERSIONE: ${{ inputs.versione }}
+      RAMO: ${{ inputs.ramo }}
+      PREFISSO: ${{ inputs.prefisso_tag }}
+      RELEASE: ${{ inputs.release }}
+      PLAY_STORE: ${{ inputs.play_store }}
+      ALTRI_WORKFLOW: ${{ inputs.altri_workflow }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ramo }}
+          fetch-depth: 0
+
+      - name: Controlla la versione e prepara il tag
+        id: dati
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSIONE="$(printf '%s' "$VERSIONE" | tr -d '[:space:]')"
+          VERSIONE="${VERSIONE#"$PREFISSO"}"   # accetta anche "v26.1"
+          [ -n "$VERSIONE" ] || { echo "::error::Versione vuota"; exit 1; }
+
+          TAG="${PREFISSO}${VERSIONE}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Il tag $TAG esiste già sul repository"; exit 1
+          fi
+
+          # Segnala (senza bloccare) se la versione non corrisponde ad appVersion
+          if [ -f app/build.gradle ]; then
+            APP_VER="$(sed -nE 's/^[[:space:]]*def appVersion[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' app/build.gradle | head -1)"
+            if [ -n "$APP_VER" ] && [ "$APP_VER" != "$VERSIONE" ]; then
+              echo "::warning::appVersion in app/build.gradle è $APP_VER, il tag è $VERSIONE"
+            fi
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Tag da creare"
+            echo "- **Tag:** $TAG"
+            echo "- **Ramo:** $RAMO ($(git rev-parse --short HEAD))"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Crea e invia il tag
+        shell: bash
+        env:
+          TAG: ${{ steps.dati.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name "Daniele Lolli (UncleDan)"
+          git config user.email "uncledan74@gmail.com"
+          git tag -a "$TAG" -m "Tabellone Baskin EISI (Cast) ${TAG#"$PREFISSO"}"
+          git push origin "$TAG"
+          echo "- **Creato:** $TAG" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Avvia i workflow sul nuovo tag
+        shell: bash
+        env:
+          TAG: ${{ steps.dati.outputs.tag }}
+        run: |
+          set -euo pipefail
+          LISTA=""
+          [ "$RELEASE" = "true" ] && LISTA="$LISTA release.yml"
+          [ "$PLAY_STORE" = "true" ] && LISTA="$LISTA play-prepare.yml"
+          LISTA="$LISTA $ALTRI_WORKFLOW"
+          if [ -z "$(printf '%s' "$LISTA" | tr -d '[:space:]')" ]; then
+            echo "Nessun workflow da avviare: creato solo il tag."
+            echo "- Nessun workflow avviato (solo tag)" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          for WF in $LISTA; do
+            echo "Avvio $WF su $TAG"
+            gh workflow run "$WF" --repo "$GITHUB_REPOSITORY" --ref "$TAG"
+            echo "- **Avviato:** $WF su $TAG" >> "$GITHUB_STEP_SUMMARY"
+          done
