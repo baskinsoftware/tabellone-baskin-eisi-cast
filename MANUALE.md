@@ -16,7 +16,7 @@ si integrano:
 
 - **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/baskinsoftware/tabellone-baskin-eisi-pwa)**.
   È il segnapunti web: si apre in un browser, si installa, funziona offline
-  (online: <https://www.uncledan.it/tabellone-baskin/>). Da sola mostra il
+  (online: <https://baskinsoftware.github.io/tabellone-baskin-eisi-pwa/>). Da sola mostra il
   tabellone su **uno** schermo. In modalità `?display=1` fa da **schermo (display)
   via browser** per l'app.
 - **App Android — "Cast"** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/baskinsoftware/tabellone-baskin-eisi-cast)**

@@ -70,7 +70,7 @@ Il Tabellone Baskin esiste in **due repository**, che lavorano insieme:
 
 - **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/baskinsoftware/tabellone-baskin-eisi-pwa)**:
   il segnapunti web, installabile e offline, ospitabile su GitHub Pages
-  (online su <https://www.uncledan.it/tabellone-baskin/>). È anche il *display*
+  (online su <https://baskinsoftware.github.io/tabellone-baskin-eisi-pwa/>). È anche il *display*
   via browser di questa app.
 - **App Android (Cast)** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/baskinsoftware/tabellone-baskin-eisi-cast)** *(questo, work in progress)*:
   incorpora la stessa PWA e aggiunge i ruoli, la scoperta di rete e la
