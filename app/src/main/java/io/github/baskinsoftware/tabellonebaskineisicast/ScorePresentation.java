@@ -1,4 +1,4 @@
-package it.uncledan.baskintabellonecast;
+package io.github.baskinsoftware.tabellonebaskineisicast;
 
 import android.annotation.SuppressLint;
 import android.app.Presentation;

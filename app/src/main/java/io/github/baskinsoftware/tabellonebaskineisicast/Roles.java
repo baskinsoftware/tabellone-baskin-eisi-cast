@@ -1,4 +1,4 @@
-package it.uncledan.baskintabellonecast;
+package io.github.baskinsoftware.tabellonebaskineisicast;
 
 import android.content.Context;
 import android.content.SharedPreferences;

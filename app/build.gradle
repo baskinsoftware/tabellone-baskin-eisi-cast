@@ -3,42 +3,61 @@ plugins {
 }
 
 android {
-    namespace 'it.uncledan.baskintabellonecast'
+    namespace 'io.github.baskinsoftware.tabellonebaskineisicast'
     compileSdk 34
 
     // ── Versioni parallele Cast ⇄ PWA ───────────────────────────────────────
     // Cast e PWA hanno numerazioni SEPARATE ma TENUTE IN PARALLELO: il Cast
-    // rispecchia la versione della PWA che incorpora.
+    // rispecchia ESATTAMENTE la versione della PWA che incorpora, qualunque sia
+    // il numero di cifre.
     //
-    //   PWA 26.0   ->  Cast 26.0
-    //   PWA 26.1   ->  Cast 26.1
-    //   PWA 27.0   ->  Cast 27.0
+    //   PWA 26.0     ->  Cast 26.0
+    //   PWA 26.0.1   ->  Cast 26.0.1
+    //   PWA 26.1     ->  Cast 26.1
     //
     // Le modifiche al SOLO Cast (fix nativi, icone, CI, dipendenze), a parità
-    // di PWA, aggiungono una terza cifra e NON toccano le prime due:
+    // di PWA, aggiungono UN LIVELLO IN FONDO e non toccano le cifre della PWA,
+    // così il parallelismo resta leggibile:
     //
-    //   26.0  ->  26.0.1  ->  26.0.2      (PWA sempre 26.0)
+    //   PWA 26.0.1  ->  Cast 26.0.1  ->  26.0.1.1  ->  26.0.1.2
+    //   PWA 26.1    ->  Cast 26.1    ->  26.1.1    ->  26.1.2
     //
     // castPatch torna a 0 ad ogni nuovo re-sync della PWA.
     //
-    // versionCode = major*10000 + minor*100 + castPatch:
-    //   26.0    -> 260000        26.0.1 -> 260001
-    //   26.1    -> 260100        27.0   -> 270000
-    // Sempre crescente, come richiede Google Play.
+    // versionCode = major*10000 + minor*100 + pwaPatch*10 + castPatch
+    //   26.0      -> 260000        26.0.1   -> 260010
+    //   26.0.1.1  -> 260011        26.1     -> 260100
+    //   26.1.1    -> 260101        27.0     -> 270000
+    // Sempre crescente, come richiede Google Play. Le ultime due cifre sono lo
+    // spazio condiviso da pwaPatch (decine) e castPatch (unità): max 9 ciascuno,
+    // ampiamente sufficiente perché oltre si avanza di minor.
     //
-    // NB: i tre valori qui sotto sono scritti come LETTERALI di proposito —
+    // ── Beta ────────────────────────────────────────────────────────────────
+    // Le versioni di prova usano SOLO la notazione "bN" attaccata alla versione
+    // di destinazione: 26.1b1, 26.1b2, ... mai suffissi tipo "26.1b1.1".
+    // Durante una beta la PWA incorporata può essere ancora quella precedente
+    // (il re-sync arriva prima della release finale): in quel caso il controllo
+    // del parallelismo qui sotto avvisa senza fermare la build, mentre su una
+    // release finale resta un errore.
+    // Il versionCode di una beta è quello della versione di destinazione, perché
+    // le beta si installano a mano e non passano dagli store.
+    //
+    // NB: i valori qui sotto sono scritti come LETTERALI di proposito —
     // fdroidserver li legge staticamente da questo file, e un valore calcolato
     // non sarebbe riconosciuto. Per evitare disallineamenti a mano c'è il
     // controllo automatico più sotto: se un numero non torna, la build si ferma.
-    def pwaVersion = "26.0"   // versione della PWA incorporata in assets/pwa/
-    def castPatch  = 0        // >0 solo per modifiche al solo Cast
-    def appVersion = "26.0"   // = pwaVersion (+ ".castPatch" se castPatch > 0)
+    def pwaVersion = "26.1"     // PWA realmente incorporata in assets/pwa/
+    def targetPwa  = "26.1"     // PWA che questa versione rispecchia (= pwaVersion
+                                // dopo il re-sync; durante una beta può precederlo)
+    def castPatch  = 0          // >0 solo per modifiche al solo Cast
+    def beta       = 0          // 0 = release finale; N>0 = beta "bN"
+    def appVersion = "26.1"     // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
 
     defaultConfig {
-        applicationId "it.uncledan.baskintabellonecast"
+        applicationId "io.github.baskinsoftware.tabellonebaskineisicast"
         minSdk 21
         targetSdk 34
-        versionCode 260000
+        versionCode 260100
         versionName appVersion
 
         // esposte al codice/BuildConfig per un'eventuale schermata "Info"
@@ -48,20 +67,63 @@ android {
 
     // ── Controllo di coerenza delle versioni parallele ───────────────────────
     // Verifica che appVersion e versionCode rispettino la regola qui sopra a
-    // partire da pwaVersion + castPatch. Sbagliare un numero durante un
+    // partire da targetPwa + castPatch + beta. Sbagliare un numero durante un
     // re-sync diventa un errore di build, non un bug scoperto sullo store.
-    def _pwaParts    = pwaVersion.tokenize('.').collect { it.toInteger() }
-    def _attesoName  = castPatch == 0 ? pwaVersion : "${pwaVersion}.${castPatch}"
-    def _attesoCode  = _pwaParts[0] * 10000 + _pwaParts[1] * 100 + castPatch
-    if (appVersion != _attesoName) {
+    // Niente regex di proposito: in Groovy una regex "slashy" che finisce con
+    // il dollaro confina con la sintassi delle stringhe $/.../$ ed è un
+    // inciampo noto, quindi appVersion si divide a mano.
+    def _bPos  = appVersion.indexOf('b')
+    def _base  = _bPos < 0 ? appVersion : appVersion.substring(0, _bPos)
+    def _betaS = _bPos < 0 ? "" : appVersion.substring(_bPos + 1)
+    if (_base.isEmpty() || !_base.tokenize('.').every { it.isInteger() } ||
+        (_bPos >= 0 && !_betaS.isInteger())) {
         throw new GradleException(
-            "Versioni non allineate: appVersion='${appVersion}', ma da PWA " +
-            "${pwaVersion} + castPatch ${castPatch} risulta '${_attesoName}'.")
+            "appVersion='${appVersion}' non rispetta il formato x.y[.z[.w]][bN].")
     }
+    def _betaN = _betaS.isEmpty() ? 0 : _betaS.toInteger()
+    if (_betaN != beta) {
+        throw new GradleException(
+            "Beta non allineata: appVersion='${appVersion}' indica " +
+            "${_betaN == 0 ? 'una release finale' : 'la beta ' + _betaN} " +
+            "ma beta = ${beta}.")
+    }
+
+    // La base di appVersion deve essere targetPwa, più castPatch se presente.
+    // I ruoli delle cifre vengono dalla FORMA di targetPwa, non dalla loro
+    // posizione: con targetPwa "26.1" un castPatch 1 dà "26.1.1" (unità del
+    // versionCode), con targetPwa "26.0.1" dà "26.0.1.1".
+    def _attesoBase = castPatch == 0 ? targetPwa : "${targetPwa}.${castPatch}"
+    if (_base != _attesoBase) {
+        throw new GradleException(
+            "Versioni non allineate: appVersion='${appVersion}' ha base '${_base}', " +
+            "ma da targetPwa ${targetPwa} + castPatch ${castPatch} risulta '${_attesoBase}'.")
+    }
+
+    def _t = targetPwa.tokenize('.').collect { it.toInteger() }
+    def _tMajor = _t[0]
+    def _tMinor = _t.size() > 1 ? _t[1] : 0
+    def _tPatch = _t.size() > 2 ? _t[2] : 0
+    if (_tPatch > 9 || castPatch > 9) {
+        throw new GradleException(
+            "La terza cifra della PWA (${_tPatch}) e castPatch (${castPatch}) devono " +
+            "restare sotto 10: oltre, il versionCode non sarebbe piu' ordinabile.")
+    }
+    def _attesoCode = _tMajor * 10000 + _tMinor * 100 + _tPatch * 10 + castPatch
     if (defaultConfig.versionCode != _attesoCode) {
         throw new GradleException(
-            "versionCode non allineato: ${defaultConfig.versionCode}, " +
-            "atteso ${_attesoCode} (da PWA ${pwaVersion} + castPatch ${castPatch}).")
+            "versionCode non allineato: ${defaultConfig.versionCode}, atteso " +
+            "${_attesoCode} (da targetPwa ${targetPwa} + castPatch ${castPatch}).")
+    }
+
+    // Parallelismo con la PWA davvero incorporata: obbligatorio sulle release
+    // finali, solo un avviso durante una beta (il re-sync può arrivare dopo).
+    if (pwaVersion != targetPwa) {
+        def _msg = "la PWA incorporata e' ${pwaVersion} ma questa versione punta a " +
+                   "${targetPwa}."
+        if (_betaN == 0) {
+            throw new GradleException("Versioni non parallele: ${_msg}")
+        }
+        logger.warn("ATTENZIONE: ${_msg} Ri-sincronizzare la PWA prima della release finale.")
     }
 
     buildFeatures {

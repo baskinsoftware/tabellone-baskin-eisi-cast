@@ -222,16 +222,16 @@
       <h2 data-i18n="info_title">Informazioni</h2>
       <div class="about">
         <p class="about-title">Tabellone Baskin EISI (PWA)</p>
-        <p class="about-meta"><span data-i18n="version_label">Versione</span> <span id="aboutVersion">26.0</span> — Daniele Lolli (UncleDan)</p>
+        <p class="about-meta"><span data-i18n="version_label">Versione</span> <span id="aboutVersion">26.1</span> — Daniele Lolli (UncleDan)</p>
       </div>
       <!-- verdi: installazione / info / sorgenti / segnalazioni / aggiornamenti -->
       <button class="sheet-item green" id="actInstall" type="button" data-i18n="btn_install" hidden>Installa app</button>
       <button class="sheet-item green" id="actGuide" type="button" data-i18n="btn_guide">Guida all'uso</button>
       <button class="sheet-item green" id="actAboutBaskin" type="button" data-i18n="btn_about_baskin">Cosa è il Baskin</button>
-      <a class="sheet-item sheet-link green" id="actRepo" href="https://github.com/UncleDan/tabellone-baskin-eisi-cast" target="_blank" rel="noopener noreferrer" data-i18n="btn_repo">Codice sorgente su GitHub ↗</a>
-      <a class="sheet-item sheet-link green" id="actIssues" href="https://github.com/UncleDan/tabellone-baskin-eisi-cast/issues" target="_blank" rel="noopener noreferrer" data-i18n="btn_issues">Segnalazioni ↗</a>
+      <a class="sheet-item sheet-link green" id="actRepo" href="https://github.com/baskinsoftware/tabellone-baskin-eisi-cast" target="_blank" rel="noopener noreferrer" data-i18n="btn_repo">Codice sorgente su GitHub ↗</a>
+      <a class="sheet-item sheet-link green" id="actIssues" href="https://github.com/baskinsoftware/tabellone-baskin-eisi-cast/issues" target="_blank" rel="noopener noreferrer" data-i18n="btn_issues">Segnalazioni ↗</a>
       <button class="sheet-item green" id="actCheckUpdate" type="button" data-i18n="btn_check_update">Verifica aggiornamenti</button>
-      <!-- solo nell'app Cast (visibili se presente window.CastBridge) -->
+      <!-- solo nell'app Android (visibili se presente window.CastBridge) -->
       <button class="sheet-item green" id="actCastConnect" type="button" data-i18n="btn_cast_connect" hidden>Indirizzo / QR per la TV</button>
       <button class="sheet-item green" id="actCastRole" type="button" data-i18n="btn_cast_role" hidden>Ruolo dispositivo…</button>
       <!-- ambra: opzioni di visualizzazione/audio/lingua -->
@@ -479,5 +479,6 @@
 
   <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/nativo.js"></script>
 </body>
 </html>

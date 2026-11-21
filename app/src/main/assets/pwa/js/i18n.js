@@ -77,6 +77,7 @@ const I18N_DICT = {
     toast_new_version: 'Nuova versione disponibile ({version}): disinstalla e reinstalla l\'app per aggiornare',
     toast_up_to_date: 'Sei aggiornato (v{version})',
     toast_quit_hint: 'Per uscire chiudi la finestra o la scheda',
+    toast_native_update: 'Versione {version}: le nuove versioni dell\'app sono nelle release del progetto',
     toast_period_period: '{n}° periodo',
     toast_period_overtime: 'Supplementare {n}TS',
 
@@ -270,6 +271,7 @@ const I18N_DICT = {
     toast_new_version: 'New version available ({version}): uninstall and reinstall the app to update',
     toast_up_to_date: 'You\'re up to date (v{version})',
     toast_quit_hint: 'To exit, close the window or tab',
+    toast_native_update: 'Version {version}: new versions of the app are in the project releases',
     toast_period_period: 'Period {n}',
     toast_period_overtime: 'Overtime {n} (OT{n})',
 
@@ -458,6 +460,7 @@ const I18N_DICT = {
     toast_new_version: 'Nouvelle version disponible ({version}) : désinstallez et réinstallez l\'application pour la mettre à jour',
     toast_up_to_date: 'Vous êtes à jour (v{version})',
     toast_quit_hint: 'Pour quitter, fermez la fenêtre ou l\'onglet',
+    toast_native_update: 'Version {version} : les nouvelles versions de l\'app sont dans les releases du projet',
     toast_period_period: 'Période {n}',
     toast_period_overtime: 'Prolongation {n} (TS{n})',
 
@@ -646,6 +649,7 @@ const I18N_DICT = {
     toast_new_version: 'Nueva versión disponible ({version}): desinstala y vuelve a instalar la aplicación para actualizar',
     toast_up_to_date: 'Estás actualizado (v{version})',
     toast_quit_hint: 'Para salir, cierra la ventana o la pestaña',
+    toast_native_update: 'Versión {version}: las nuevas versiones de la app están en las releases del proyecto',
     toast_period_period: 'Periodo {n}',
     toast_period_overtime: 'Prórroga {n} (TS{n})',
 
@@ -834,6 +838,7 @@ const I18N_DICT = {
     toast_new_version: 'Neue Version verfügbar ({version}): App deinstallieren und neu installieren, um zu aktualisieren',
     toast_up_to_date: 'Du bist auf dem neuesten Stand (v{version})',
     toast_quit_hint: 'Zum Beenden das Fenster oder den Tab schließen',
+    toast_native_update: 'Version {version}: neue Versionen der App findest du in den Releases des Projekts',
     toast_period_period: '{n}. Viertel',
     toast_period_overtime: 'Verlängerung {n} (V{n})',
 
@@ -977,7 +982,7 @@ function i18nDetectSystemLang(){
 
 /* Override da URL: ?lang=xx forza la lingua per questa sessione/apertura,
    senza toccare la preferenza salvata. Utile per link diretti e per lo
-   schermo Cast (?display=1&lang=de). Valori non supportati sono ignorati. */
+   schermo collegato (?display=1&lang=de). Valori non supportati sono ignorati. */
 function i18nUrlLang(){
   try{
     const v = new URLSearchParams(location.search).get('lang');

@@ -14,12 +14,12 @@ accendere e aprire l'app.
 Il Tabellone Baskin vive in **due repository GitHub** e in **due versioni** che
 si integrano:
 
-- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/UncleDan/tabellone-baskin-eisi-pwa)**.
+- **PWA (web)** — repo **[`tabellone-baskin-eisi-pwa`](https://github.com/baskinsoftware/tabellone-baskin-eisi-pwa)**.
   È il segnapunti web: si apre in un browser, si installa, funziona offline
-  (online: <https://www.uncledan.it/tabellone-baskin/>). Da sola mostra il
+  (online: <https://baskinsoftware.github.io/tabellone-baskin-eisi-pwa/>). Da sola mostra il
   tabellone su **uno** schermo. In modalità `?display=1` fa da **schermo (display)
   via browser** per l'app.
-- **App Android — "Cast"** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/UncleDan/tabellone-baskin-eisi-cast)**
+- **App Android — "Cast"** — repo **[`tabellone-baskin-eisi-cast`](https://github.com/baskinsoftware/tabellone-baskin-eisi-cast)**
   *(work in progress)*. Incorpora **la stessa** PWA e aggiunge i ruoli, la
   scoperta di rete (NSD), il web server e la presentazione su TV.
 

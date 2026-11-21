@@ -1,0 +1,4 @@
+* Updated the embedded scoreboard to version 26.1
+* Source code and issue tracker now in the baskinsoftware organisation
+* New app identifier: it installs alongside any previous version, which
+  you can then uninstall

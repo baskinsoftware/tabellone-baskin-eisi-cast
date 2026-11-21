@@ -1,0 +1,2 @@
+* Updated the embedded scoreboard PWA (version 26.0.1)
+* Source code and issue tracker moved to the baskinsoftware organisation

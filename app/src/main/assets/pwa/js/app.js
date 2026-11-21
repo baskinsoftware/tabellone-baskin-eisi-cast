@@ -5,17 +5,24 @@
    ===================================================================== */
 'use strict';
 
-const APP_VERSION = '26.0';
+const APP_VERSION = '26.1';
 const STORE_KEY = 'tabellone-baskin-eisi-v1';
+/* app nativa Android/iOS (Capacitor): stesso codice della PWA, vedi js/nativo.js */
+const NATIVO = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+const PIATTAFORMA = NATIVO ? window.Capacitor.getPlatform() : 'web';
+/* plugin locale dell'app nativa (schermo sempre acceso, chiusura): solo se presente */
+const pluginNativo = () => (NATIVO && window.Capacitor.Plugins && window.Capacitor.Plugins.Tabellone) || null;
 
 /* Modalità "sola visualizzazione": attivata con ?display=1 nell'URL.
    Nasconde tutti i comandi e riceve lo stato dal controller (via SSE quando
-   servito da un web server, o via window.applyDisplayState dal wrapper Cast).
+   servito da un web server, o via window.applyDisplayState dal wrapper Android).
    In questa modalità l'app NON persiste nulla e NON pubblica stato. */
 const DISPLAY_MODE = (()=>{ try{ return new URLSearchParams(location.search).get('display') === '1'; }catch(_){ return false; } })();
 
 /* Repository del codice sorgente (modifica l'URL se cambi repo) */
-const REPO_URL = 'https://github.com/UncleDan/tabellone-baskin-eisi-cast';
+const REPO_URL = 'https://github.com/baskinsoftware/tabellone-baskin-eisi-cast';
+/* release del progetto: l'app nativa si aggiorna installando la nuova versione */
+const REPO_RELEASES = REPO_URL + '/releases';
 
 /* =====================================================================
    >>> LOGHI EISI/BASKIN: default per la pubblicazione <<<
@@ -208,7 +215,7 @@ function saveState(fromTick){
     localStorage.setItem(STORE_KEY, JSON.stringify(state));
   }catch(e){}
   const payload = costruisciPayloadStato();
-  // wrapper "Cast": push locale al display secondario / web server integrato
+  // wrapper Android: push locale al display secondario / web server integrato
   // (a ogni salvataggio, anche sul tick, così il display resta sincronizzato)
   if(window.CastBridge && typeof window.CastBridge.pushState === 'function'){
     try{ window.CastBridge.pushState(JSON.stringify(payload)); }catch(_){}
@@ -218,7 +225,7 @@ function saveState(fromTick){
 }
 
 /* Costruisce il payload dello stato partita (usato da BaskinCam, dal wrapper
-   Cast e dal server LAN per la modalità sola visualizzazione). */
+   Android e dal server LAN per la modalità sola visualizzazione). */
 function costruisciPayloadStato(){
   const cfg = state.config;
   return {
@@ -1221,6 +1228,8 @@ async function toggleWake(){
   $('#wakeState').textContent = wakeWanted ? t('state_on') : t('state_off');
 }
 async function acquireWake(){
+  const nat = pluginNativo();
+  if(nat){ try{ await nat.schermoAcceso({ attivo: true }); }catch(e){} return; }
   try{
     if('wakeLock' in navigator){
       wakeLock = await navigator.wakeLock.request('screen');
@@ -1228,7 +1237,11 @@ async function acquireWake(){
     }
   }catch(e){ /* spesso richiede un gesto: si riproverà al primo tocco/visibilità */ }
 }
-function releaseWake(){ if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock = null; } }
+function releaseWake(){
+  const nat = pluginNativo();
+  if(nat){ nat.schermoAcceso({ attivo: false }).catch(()=>{}); return; }
+  if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock = null; }
+}
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'hidden'){ saveState(); return; }   // salva quando si va in background
   if(wakeWanted && document.visibilityState === 'visible'){ acquireWake(); }
@@ -1280,6 +1293,11 @@ window.addEventListener('appinstalled', ()=>{
    ===================================================================== */
 async function checkForUpdates(){
   closeSheet('moreBackdrop');
+  if(NATIVO){   // l'app nativa si aggiorna installando la nuova versione
+    toast(t('toast_native_update', {version: APP_VERSION}));
+    setTimeout(()=>{ location.href = REPO_RELEASES; }, 1200);
+    return;
+  }
   if(!('serviceWorker' in navigator)){ toast(t('toast_updates_unavailable')); return; }
   let reg = null;
   try{ reg = await navigator.serviceWorker.getRegistration(); }catch(e){}
@@ -1420,7 +1438,7 @@ onActivate($('#baskinInfoClose'), ()=>{ closeSheet('baskinInfoBackdrop'); });
 onActivate($('#actGuide'), ()=>{ closeSheet('moreBackdrop'); openSheet('guideBackdrop'); });
 onActivate($('#guideClose'), ()=>{ closeSheet('guideBackdrop'); });
 
-/* voci disponibili solo dentro l'app Android "Cast" (window.CastBridge) */
+/* voci disponibili solo dentro l'app Tabellone Baskin EISI (Android) (window.CastBridge) */
 (function setupCastMenu(){
   const cb = window.CastBridge;
   if(!cb) return;
@@ -1513,6 +1531,8 @@ onActivate($('#actQuit'), ()=>{
   closeSheet('moreBackdrop');
   if(!confirm(t('confirm_quit'))) return;
   saveState();
+  const nat = pluginNativo();
+  if(nat){ nat.chiudi().catch(()=>{}); return; }   // app nativa Android
   try{ window.close(); }catch(e){}
   // se il browser blocca la chiusura (es. scheda normale), avvisa
   setTimeout(()=>{ toast(t('toast_quit_hint')); }, 300);
@@ -1650,7 +1670,7 @@ if(DISPLAY_MODE){ initDisplayMode(); }
      non interrompere una partita con un reload a sorpresa. L'utente verifica
      da "Verifica aggiornamenti" nelle impostazioni e, se c'è una versione
      nuova, deve disinstallare e reinstallare l'app per applicarla. */
-if(!DISPLAY_MODE && 'serviceWorker' in navigator){
+if(!DISPLAY_MODE && !NATIVO && 'serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
     navigator.serviceWorker.register('service-worker.js').then(reg=>{
       if(isStandalone()) return;   // installata: nessun auto-update, vedi sopra

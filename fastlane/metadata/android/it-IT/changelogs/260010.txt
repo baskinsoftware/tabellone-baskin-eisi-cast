@@ -1,0 +1,2 @@
+* Aggiornata la PWA del tabellone incorporata (versione 26.0.1)
+* Codice sorgente e segnalazioni spostati nell'organizzazione baskinsoftware
