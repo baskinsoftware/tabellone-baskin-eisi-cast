@@ -25,7 +25,7 @@ riconoscibili a colpo d'occhio rispetto alla release.
 
 ---
 
-## 2. I tre workflow GitHub
+## 2. I workflow GitHub
 
 Nella cartella `.github/workflows/`:
 
@@ -34,9 +34,17 @@ Nella cartella `.github/workflows/`:
 | **Release APK** | `release.yml` | push di un tag `v*` | APK **stabile firmato**, allegato alla Release |
 | **Beta APK (unsigned)** | `beta.yml` | "Run workflow" manuale, o push sul branch `beta` | APK release **non firmato** come *artifact* del run (niente segreti) |
 | **Prepara AAB per Google Play** | `play-prepare.yml` | push di un tag `v*`, o manuale | **AAB firmato** come *artifact*, per l'upload manuale su Play Console |
+| **Crea release** | `crea-release.yml` | solo manuale (Actions → Crea release → Run workflow) | crea il **tag** della versione e avvia i workflow scelti coi due interruttori *Release APK* e *AAB per Google Play* |
 
 Idea: `beta.yml` per i test rapidi (nessuna configurazione), `release.yml` quando
 pubblichi una versione vera.
+
+Il tag si può creare a mano (`git tag` + `git push origin <tag>`) oppure con
+**Crea release**, che lo crea col token del workflow e poi avvia i workflow
+scelti. Serve quando chi lavora sul repository può inviare rami ma non tag.
+Nota: un tag creato dal token **non** fa partire i trigger `on: push: tags`
+(regola di GitHub contro i cicli), ed è il motivo per cui `release.yml` ha anche
+`workflow_dispatch` e viene avviato esplicitamente da `crea-release.yml`.
 
 ---
 

@@ -15,6 +15,9 @@ on:
   push:
     tags:
       - 'v*'
+  # Avviabile anche a mano su un tag: serve a "Crea release" (crea-release.yml),
+  # perche' un tag creato con GITHUB_TOKEN non fa partire i trigger "push: tags".
+  workflow_dispatch:
 
 permissions:
   contents: write
