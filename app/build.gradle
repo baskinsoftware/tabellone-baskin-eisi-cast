@@ -46,12 +46,12 @@ android {
     // fdroidserver li legge staticamente da questo file, e un valore calcolato
     // non sarebbe riconosciuto. Per evitare disallineamenti a mano c'è il
     // controllo automatico più sotto: se un numero non torna, la build si ferma.
-    def pwaVersion = "26.0.1"   // PWA realmente incorporata in assets/pwa/
+    def pwaVersion = "26.1"     // PWA realmente incorporata in assets/pwa/
     def targetPwa  = "26.1"     // PWA che questa versione rispecchia (= pwaVersion
                                 // dopo il re-sync; durante una beta può precederlo)
     def castPatch  = 0          // >0 solo per modifiche al solo Cast
-    def beta       = 1          // 0 = release finale; N>0 = beta "bN"
-    def appVersion = "26.1b1"   // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
+    def beta       = 2          // 0 = release finale; N>0 = beta "bN"
+    def appVersion = "26.1b2"   // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
 
     defaultConfig {
         applicationId "it.uncledan.tabellonebaskineisicast"

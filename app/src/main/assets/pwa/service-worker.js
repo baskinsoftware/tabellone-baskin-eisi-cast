@@ -12,9 +12,24 @@
    impostazioni), per non interrompere una partita con un reload a sorpresa.
 
    Aggiornare CACHE_NAME ad ogni rilascio: serve sia a invalidare la vecchia
-   cache sia a far dichiarare al file la propria versione.
+   cache sia a far dichiarare al file la propria versione (letta da
+   "Verifica aggiornamenti").
+
+   Su GitHub Pages il ramo main è pubblicato in / e il ramo beta in /beta/,
+   sulla stessa origine: le cache sono condivise tra i due. Per questo il
+   nome effettivo della cache porta lo scope ("...@<scope>") e ogni service
+   worker gestisce e ripulisce solo le proprie, più quelle vecchio stile
+   senza "@" (versioni precedenti e vecchia installazione in /pwa/).
    ===================================================================== */
-const CACHE_NAME = 'tabellone-baskin-eisi-v26.0.1';
+const CACHE_NAME = 'tabellone-baskin-eisi-v26.1';
+const CACHE_PREFIX = 'tabellone-baskin-eisi-';
+const SCOPE = self.registration.scope;
+const CACHE = CACHE_NAME + '@' + SCOPE;
+
+/* sottocartelle che appartengono ad altre installazioni sulla stessa origine
+   (ramo beta, vecchio indirizzo /pwa/): il service worker della radice non
+   le intercetta, così ognuna resta servita dal proprio. */
+const FOREIGN = ['beta/', 'pwa/'].map(d => SCOPE + d);
 
 const ASSETS = [
   './',
@@ -22,6 +37,7 @@ const ASSETS = [
   './css/styles.css',
   './js/i18n.js',
   './js/app.js',
+  './js/nativo.js',
   './manifest.webmanifest',
   './sounds/horn.wav',
   './sounds/whistle.wav',
@@ -40,7 +56,7 @@ self.addEventListener('message', (event)=>{
 
 self.addEventListener('install', (event)=>{
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
+    caches.open(CACHE).then(cache =>
       cache.addAll(ASSETS.map(u => new Request(u, { cache: 'reload' })))
     )
   );
@@ -49,7 +65,10 @@ self.addEventListener('install', (event)=>{
 self.addEventListener('activate', (event)=>{
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k =>
+        k !== CACHE && k.startsWith(CACHE_PREFIX) &&
+        (!k.includes('@') || k.endsWith('@' + SCOPE))
+      ).map(k => caches.delete(k)))
     ).then(()=> self.clients.claim())
   );
 });
@@ -57,20 +76,23 @@ self.addEventListener('activate', (event)=>{
 self.addEventListener('fetch', (event)=>{
   const req = event.request;
   if(req.method !== 'GET') return;
+  if(FOREIGN.some(f => req.url.startsWith(f))) return;
 
   event.respondWith(
-    caches.match(req).then(cached => {
+    caches.open(CACHE).then(c => c.match(req)).then(cached => {
       if(cached) return cached;
       return fetch(req).then(res => {
         // memorizza in cache le richieste valide della stessa origine
         if(res && res.status === 200 && res.type === 'basic'){
           const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy));
+          caches.open(CACHE).then(c => c.put(req, copy));
         }
         return res;
       }).catch(()=>{
         // fallback: per le navigazioni, restituisci la pagina principale
-        if(req.mode === 'navigate'){ return caches.match('./index.html'); }
+        if(req.mode === 'navigate'){
+          return caches.open(CACHE).then(c => c.match('./index.html'));
+        }
       });
     })
   );

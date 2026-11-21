@@ -29,8 +29,8 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1b1
-(beta; incorpora ancora la PWA Tabellone Baskin EISI 26.0.1)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1b2
+(beta; incorpora la PWA Tabellone Baskin EISI 26.1)
 
 > ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
 > progetti con numerazioni **separate**, ma **tenute in parallelo**: il Cast
@@ -209,4 +209,4 @@ Due workflow lavorano insieme:
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1b1
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1b2
