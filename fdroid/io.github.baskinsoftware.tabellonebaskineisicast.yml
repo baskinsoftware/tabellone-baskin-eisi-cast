@@ -28,9 +28,9 @@ RepoType: git
 Repo: https://github.com/baskinsoftware/tabellone-baskin-eisi-cast.git
 
 Builds:
-  - versionName: '26.0'
-    versionCode: 260000
-    commit: v26.0
+  - versionName: '26.1'
+    versionCode: 260100
+    commit: v26.1
     subdir: app
     gradle:
       - yes
@@ -51,5 +51,5 @@ AutoUpdateMode: Version
 # una lettera: F-Droid impacchetta solo le release finali.
 UpdateCheckMode: Tags ^v[0-9.]+$
 
-CurrentVersion: '26.0'
-CurrentVersionCode: 260000
+CurrentVersion: '26.1'
+CurrentVersionCode: 260100

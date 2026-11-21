@@ -1,0 +1,4 @@
+* Aggiornato il tabellone incorporato alla versione 26.1
+* Codice sorgente e segnalazioni nell'organizzazione baskinsoftware
+* Nuovo identificativo dell'app: si installa accanto a una eventuale
+  versione precedente, che puoi disinstallare

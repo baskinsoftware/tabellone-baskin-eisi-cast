@@ -12,7 +12,7 @@ Requisiti: JDK 17 e Android SDK (`compileSdk 34`). Dalla cartella del progetto:
 ```bash
 # APK di debug (firmato con la chiave di debug di Android) — versione "-beta"
 ./gradlew assembleDebug
-# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.1b3-beta)
+# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.1-beta)
 
 # APK release (firmato solo se imposti le variabili keystore, vedi §3)
 ./gradlew assembleRelease

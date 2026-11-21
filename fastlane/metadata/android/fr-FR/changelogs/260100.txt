@@ -1,0 +1,4 @@
+* Mise à jour du tableau intégré en version 26.1
+* Code source et signalements dans l'organisation baskinsoftware
+* Nouvel identifiant de l'application : elle s'installe à côté d'une
+  version précédente éventuelle, que vous pouvez désinstaller
