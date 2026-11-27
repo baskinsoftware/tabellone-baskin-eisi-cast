@@ -1,0 +1,5 @@
+Firma dell'APK allineata a quella dell'app della PWA: stessi nomi delle variabili di
+firma e signingConfig dichiarato solo quando il keystore c'è davvero. Workflow di
+pubblicazione rifatto sul modello della PWA: la Release nasce con titolo e testo presi
+dal README, con gli interruttori per pre-release e bozza, e l'APK sostituisce il
+precedente invece di accumularsi. Nessuna modifica al tabellone.

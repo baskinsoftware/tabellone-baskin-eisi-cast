@@ -32,7 +32,7 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1.1
 (incorpora la PWA Tabellone Baskin EISI 26.1)
 
 > ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
@@ -195,6 +195,20 @@ Il manifest dichiara `touchscreen` e `leanback` **non richiesti** e registra il
 nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 `KEY_PASSWORD`. La chiave non entra mai nel repo.
 
+La Release si crea dal workflow **`crea-release.yml`** (*Actions → Crea
+release*), che compone titolo e testo dal README, crea il tag e avvia i
+workflow dell'APK e dell'AAB. È lo stesso file — stessi parametri, stessa
+logica — della `release.yml` della PWA.
+
+> ℹ️ **Firma dell'APK (dalla 26.1.1):** i segreti restano quelli sopra, ma i
+> workflow li passano a Gradle con i nomi **`TBE_KEYSTORE_PATH`**,
+> `TBE_KEYSTORE_PASSWORD`, `TBE_KEY_ALIAS`, `TBE_KEY_PASSWORD` — gli stessi
+> dell'app Android della PWA, così i due progetti si firmano allo stesso modo.
+> Il `signingConfig` ora non viene nemmeno **dichiarato** se il keystore manca
+> (prima esisteva sempre, vuoto: era la causa dell'errore `Tag number over 30
+> is not supported` quando il file del keystore era assente). Dettagli in
+> [`COMPILAZIONE-E-RELEASE.md`](COMPILAZIONE-E-RELEASE.md).
+
 ## Verso il Play Store
 
 - `applicationId` **immutabile**: `io.github.baskinsoftware.tabellonebaskineisicast`.
@@ -203,4 +217,4 @@ nel repository: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1.1
