@@ -1,0 +1,6 @@
+Synced with PWA 26.1.2. APK signing aligned with the PWA app: same signing variable
+names, and the signing configuration is only declared when a keystore is actually
+present. New signing key: anyone coming from an earlier version must uninstall and
+reinstall. Publishing workflow rebuilt on the PWA model, with the Release created using
+the title and text taken from the README, and build dependencies fetched from a mirror
+to avoid network errors. No changes to the scoreboard itself.

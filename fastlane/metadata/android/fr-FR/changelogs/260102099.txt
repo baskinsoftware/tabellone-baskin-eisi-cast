@@ -1,0 +1,7 @@
+Aligné sur la PWA 26.1.2. Signature de l'APK alignée sur celle de l'application PWA :
+mêmes noms de variables de signature et configuration de signature déclarée uniquement
+si le keystore existe vraiment. Nouvelle clé de signature : qui vient d'une version
+précédente doit désinstaller et réinstaller. Workflow de publication refait sur le
+modèle de la PWA, avec la Release créée avec le titre et le texte tirés du README, et
+les dépendances de compilation téléchargées depuis un miroir pour éviter les erreurs
+réseau. Aucune modification du tableau d'affichage.

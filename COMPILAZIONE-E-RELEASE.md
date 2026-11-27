@@ -12,7 +12,7 @@ Requisiti: JDK 17 e Android SDK (`compileSdk 34`). Dalla cartella del progetto:
 ```bash
 # APK di debug (firmato con la chiave di debug di Android) — versione "-beta"
 ./gradlew assembleDebug
-# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.1.1-beta)
+# output: app/build/outputs/apk/debug/app-debug.apk   (versionName es. 26.1.2-beta)
 
 # APK release (firmato solo se imposti le variabili keystore, vedi §3)
 ./gradlew assembleRelease
@@ -144,24 +144,24 @@ export TBE_KEY_PASSWORD='…'
 ## 4. Pubblicare una release su GitHub
 
 Modo consigliato: **Actions → Crea release → Run workflow**, con la versione
-(es. `26.1.1`) e il ramo. Il workflow crea il tag, crea la Release col titolo e
+(es. `26.1.2`) e il ramo. Il workflow crea il tag, crea la Release col titolo e
 il testo presi dal README e avvia i due workflow dell'app.
 
 A mano, in alternativa:
 
 ```bash
 # porta la versione avanti in app/build.gradle (versionCode + versionName)
-git commit -am "Release 26.1.1"
-git tag -a v26.1.1 -m "Tabellone Baskin EISI (Cast) 26.1.1"
+git commit -am "Release 26.1.2"
+git tag -a v26.1.2 -m "Tabellone Baskin EISI (Cast) 26.1.2"
 git push origin main --tags
 ```
 
-Il push del tag `v26.1.1` avvia `release.yml`, che crea la Release se non c'è e
-allega `TabelloneBaskinCast-v26.1.1-signed.apk` (stabile firmato), e
+Il push del tag `v26.1.2` avvia `release.yml`, che crea la Release se non c'è e
+allega `TabelloneBaskinCast-v26.1.2-signed.apk` (stabile firmato), e
 `play-prepare.yml`, che prepara l'AAB per Google Play come artifact del run.
 
 > Sulla numerazione delle versioni (`26.0`, `26.0.1`, `26.0.1.1`, …) vedi il riquadro
-> "Versioni parallele Cast ⇄ PWA" nel [`README.md`](README.md).
+> "Versioning Baskin v3" nel [`README.md`](README.md).
 
 ---
 
@@ -205,4 +205,4 @@ Con il log dell'errore la messa a punto è rapida.
 
 ---
 
-*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin EISI (Cast) 26.1.1.*
+*Autore: Daniele Lolli (UncleDan) — Tabellone Baskin EISI (Cast) 26.1.2.*

@@ -32,36 +32,46 @@ FOSS: NanoHTTPD BSD‑3‑Clause, ZXing e AndroidX Apache‑2.0 — attribuzioni
 Maven, che sono repository **ammessi** dalla policy F‑Droid: vedi
 [`F-DROID.md`](F-DROID.md) per lo stato della candidatura e cosa manca.
 
-**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1.1
-(incorpora la PWA Tabellone Baskin EISI 26.1)
+**Autore:** Daniele Lolli (UncleDan) · **Licenza:** MIT · **Versione:** 26.1.2
+(incorpora la PWA Tabellone Baskin EISI 26.1.2)
 
-> ℹ️ **Versioni parallele Cast ⇄ PWA (dalla 26.0):** Cast e PWA restano due
-> progetti con numerazioni **separate**, ma **tenute in parallelo**: il Cast
-> rispecchia **esattamente** la versione della PWA che incorpora, qualunque sia
-> il numero di cifre — `PWA 26.0 → Cast 26.0`, `PWA 26.0.1 → Cast 26.0.1`. Le
-> modifiche al **solo Cast** (fix nativi, icone, CI, dipendenze), a parità di
-> PWA, aggiungono **un livello in fondo** senza toccare le cifre della PWA:
-> `26.0.1 → 26.0.1.1 → 26.0.1.2`. Il `versionCode` segue
-> `major*10000 + minor*100 + pwaPatch*10 + castPatch` (es. `26.0 → 260000`,
-> `26.0.1 → 260010`, `26.0.1.1 → 260011`, `26.1 → 260100`), sempre crescente
-> come richiede Google Play.
+> ℹ️ **Versioning Baskin v3 (dalla 26.1.2):** il Cast segue la regola unica di
+> tutti i progetti Baskin — **`AA.M[.P][.W][bN]`**: `AA` anno a due cifre, `M`
+> progressivo di release dell'anno (*non* il mese), `P` patch, `W` revisione del
+> **solo wrapper**, `bN` beta. Il numero **rispecchia la PWA incorporata**
+> (PWA 26.1.2 → Cast 26.1.2); un fix del solo wrapper (nativo, icone, CI,
+> firma, dipendenze) aggiunge `W` senza toccare le cifre della PWA
+> (`26.1.2 → 26.1.2.1`), e `W` torna a 0 al re-sync successivo. Quando la PWA
+> ha solo due cifre la `P` si scrive a zero per fare posto a `W`: `26.1` + W 1
+> dà **`26.1.0.1`**, perché `26.1.1` significa già la patch 1 della PWA.
 >
-> Le **versioni di prova** usano solo la notazione `bN` attaccata alla versione
-> di destinazione (`26.1b1`, `26.1b2`), mai suffissi tipo `26.1b1.1`, e portano
-> il `versionCode` della versione di destinazione: si installano a mano e non
-> passano dagli store. Durante una beta la PWA incorporata può essere ancora
-> quella precedente: `targetPwa` dice a quale PWA punta la versione, e il
-> controllo avvisa invece di bloccare finché la beta non diventa release finale.
+> `W` esiste solo nei **wrapper separati** come questo: nei repository dove app
+> e PWA condividono un unico numero (Tabellone PWA, Classificazione) non si usa.
 >
-> In `app/build.gradle` la fonte di verità è `pwaVersion`, `targetPwa` e
-> `castPatch`; i
-> valori restano scritti come letterali (serve a F‑Droid, che li legge
-> staticamente), ma un **controllo automatico blocca la build** se non
-> rispettano la regola. La versione della PWA è anche leggibile a runtime via
-> `BuildConfig.PWA_VERSION`.
+> Il `versionCode` è a **9 cifre**, `AA MM PP W BB`, dove `BB` è il contatore
+> unico delle pre-release (`01`–`98`) e `99` indica la finale:
 >
-> <sub>Fino alla 1.3.3 si usava una "doppia versione" (`1.3.3 (PWA 2026d)`),
-> abbandonata perché poco conforme agli store.</sub>
+> | Versione | `versionCode` |
+> |---|---|
+> | `26.1.2` | `260102099` |
+> | `26.1.2b1` | `260102001` |
+> | `26.1.2.1` | `260102199` |
+> | `26.2` | `260200099` |
+>
+> Ogni beta sta così sotto la propria finale e il numero cresce sempre, come
+> richiede Google Play.
+>
+> In `app/build.gradle` la fonte di verità è `pwaVersion`, `targetPwa`,
+> `wrapper` e `beta`; i valori restano scritti come letterali (serve a F‑Droid,
+> che li legge staticamente), ma un **controllo automatico blocca la build** se
+> non rispettano la regola. La versione della PWA è anche leggibile a runtime
+> via `BuildConfig.PWA_VERSION`.
+>
+> <sub>Fino alla 26.1.1 il Cast usava uno schema proprio, con `versionCode` a
+> 6 cifre (`26.1 → 260100`) e la revisione del wrapper in terza posizione: due
+> situazioni diverse potevano produrre lo stesso `versionName`. Prima della
+> 26.0 si usava una "doppia versione" (`1.3.3 (PWA 2026d)`), abbandonata perché
+> poco conforme agli store.</sub>
 
 ---
 
@@ -217,4 +227,4 @@ logica — della `release.yml` della PWA.
 
 ---
 
-**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1.1
+**Autore:** Daniele Lolli (UncleDan) — **Versione:** 26.1.2
