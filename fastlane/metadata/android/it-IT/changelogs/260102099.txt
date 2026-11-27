@@ -1,0 +1,7 @@
+Allineata alla PWA 26.1.2. Firma dell'APK allineata a quella dell'app della PWA:
+stessi nomi delle variabili di firma e configurazione di firma dichiarata solo quando
+il keystore c'è davvero. Chiave di firma nuova: chi arriva da una versione precedente
+deve disinstallare e reinstallare. Workflow di pubblicazione rifatto sul modello della
+PWA, con la Release che nasce col titolo e il testo presi dal README, e dipendenze di
+compilazione scaricate da un mirror per evitare gli errori di rete. Nessuna modifica al
+tabellone.

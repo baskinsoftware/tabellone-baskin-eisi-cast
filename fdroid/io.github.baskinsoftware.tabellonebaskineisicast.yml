@@ -35,18 +35,19 @@ Builds:
     gradle:
       - yes
 
-  - versionName: '26.1.1'
-    versionCode: 260101
-    commit: v26.1.1
+  - versionName: '26.1.2'
+    versionCode: 260102099
+    commit: v26.1.2
     subdir: app
     gradle:
       - yes
 
-# Nota sul versionName: dalla 26.0 il Cast tiene la propria numerazione in
-# parallelo a quella della PWA incorporata, rispecchiandola esattamente
-# (PWA 26.0.1 -> Cast 26.0.1). Un livello in piu' in fondo (es. 26.0.1.1) indica
-# modifiche al solo Cast a parita' di PWA.
-# versionCode = major*10000 + minor*100 + pwaPatch*10 + castPatch.
+# Nota sul versionName: dalla 26.1.2 il Cast segue la regola di versioning
+# Baskin v3, AA.M[.P][.W][bN]: il numero rispecchia la PWA incorporata e W e' la
+# revisione del solo wrapper (PWA 26.1.2 -> Cast 26.1.2 -> 26.1.2.1).
+# versionCode a 9 cifre, AA MM PP W BB, con BB = 01..98 per le pre-release e 99
+# per la finale (26.1.2 -> 260102099). Le versioni fino alla 26.1.1 usavano lo
+# schema precedente a 6 cifre (260100, 260101).
 #
 # Rispetto al vecchio schema a "doppia versione" ("1.3.3 (PWA 2026d)"), il
 # versionName è ora una stringa semplice assegnata da una variabile gradle:
@@ -54,9 +55,9 @@ Builds:
 # metadati può funzionare. Resta comunque prudente verificare i primi
 # aggiornamenti automatici prima di fidarsi del tutto.
 AutoUpdateMode: Version
-# Il filtro esclude di proposito i tag delle beta (es. v26.1b1), che contengono
-# una lettera: F-Droid impacchetta solo le release finali.
+# Il filtro esclude di proposito i tag delle beta (es. v26.1.2b1), che
+# contengono una lettera: F-Droid impacchetta solo le release finali.
 UpdateCheckMode: Tags ^v[0-9.]+$
 
-CurrentVersion: '26.1.1'
-CurrentVersionCode: 260101
+CurrentVersion: '26.1.2'
+CurrentVersionCode: 260102099
