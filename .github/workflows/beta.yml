@@ -1,8 +1,11 @@
+# beta.yml by Daniele Lolli (UncleDan) feat. Claude AI - Release 1.1 - 2026-11-27 15-59-23
+#
 name: Beta APK (unsigned)
 
 # Compila un APK di RELEASE NON FIRMATO, senza bisogno di keystore né segreti.
-# Il buildType "release", in assenza della variabile d'ambiente KEYSTORE_FILE,
-# non applica alcuna firma: Gradle produce "app-release-unsigned.apk".
+# Il buildType "release", in assenza della variabile d'ambiente
+# TBE_KEYSTORE_PATH (dalla 26.1.1; prima si chiamava KEYSTORE_FILE), non
+# dichiara nemmeno il signingConfig: Gradle produce "app-release-unsigned.apk".
 #
 # Si avvia:
 #  - a mano dal tab "Actions" → "Beta APK (unsigned)" → "Run workflow";
@@ -18,15 +21,22 @@ on:
     branches:
       - beta
 
+permissions:
+  contents: read
+
+concurrency:
+  group: beta-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   beta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -44,7 +54,7 @@ jobs:
              "out/TabelloneBaskinCast-beta-${GITHUB_SHA::7}-unsigned.apk"
 
       - name: Carica l'APK beta come artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: TabelloneBaskinCast-beta-${{ env.SHORT_SHA }}-unsigned
           path: out/*.apk

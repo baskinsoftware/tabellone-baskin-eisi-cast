@@ -35,6 +35,13 @@ Builds:
     gradle:
       - yes
 
+  - versionName: '26.1.1'
+    versionCode: 260101
+    commit: v26.1.1
+    subdir: app
+    gradle:
+      - yes
+
 # Nota sul versionName: dalla 26.0 il Cast tiene la propria numerazione in
 # parallelo a quella della PWA incorporata, rispecchiandola esattamente
 # (PWA 26.0.1 -> Cast 26.0.1). Un livello in piu' in fondo (es. 26.0.1.1) indica
@@ -51,5 +58,5 @@ AutoUpdateMode: Version
 # una lettera: F-Droid impacchetta solo le release finali.
 UpdateCheckMode: Tags ^v[0-9.]+$
 
-CurrentVersion: '26.1'
-CurrentVersionCode: 260100
+CurrentVersion: '26.1.1'
+CurrentVersionCode: 260101

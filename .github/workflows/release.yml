@@ -1,53 +1,71 @@
-name: Release APK
-
-# Compila, firma e allega l'APK alla Release di GitHub quando pubblichi un tag "v*".
+# release.yml by Daniele Lolli (UncleDan) feat. Claude AI - Release 2.0 - 2026-11-27 15-59-23
 #
-# Titolo e testo della Release seguono la regola del progetto: titolo = primo
-# titolo "# " del README + spazio + tag (es. "Tabellone Baskin EISI (Cast) v26.1"),
-# testo = il README dalla prima riga non vuota dopo quel titolo.
+# Compila, firma e allega l'APK alla Release di GitHub del tag "v*".
 #
-# Segreti richiesti nel repository (Settings → Secrets and variables → Actions):
-#   KEYSTORE_BASE64     il tuo keystore .jks codificato in base64
+# Si avvia al push di un tag "v*" oppure a mano (e' cosi' che lo lancia
+# "Crea release", perche' un tag creato con GITHUB_TOKEN non fa partire i
+# trigger "push: tags").
+#
+# Se la Release del tag non esiste ancora, la crea seguendo la regola del
+# progetto: titolo = primo titolo "# " del README + spazio + tag
+# (es. "Tabellone Baskin EISI (Cast) v26.1.1"), testo = il README dalla prima
+# riga non vuota dopo quel titolo. Se invece la Release c'e' gia' (l'ha appena
+# creata "Crea release"), questo workflow NON ne tocca titolo e testo: carica
+# solo l'APK. L'upload usa --clobber, quindi ri-eseguirlo sostituisce l'APK
+# invece di accumularne copie.
+#
+# ── Firma ───────────────────────────────────────────────────────────────────
+# Segreti richiesti nel repository (Settings -> Secrets and variables -> Actions):
+#   KEYSTORE_BASE64     il keystore .jks codificato in base64
 #                       (genera con:  base64 -w0 mio.jks   oppure  base64 mio.jks )
 #   KEYSTORE_PASSWORD   password dello store
 #   KEY_ALIAS           alias della chiave
 #   KEY_PASSWORD        password della chiave
 #
-# La chiave NON entra mai nel repository: viene ricostruita in RAM durante la build.
+# Dalla 26.1.1 i segreti vengono passati a Gradle con i nomi TBE_* (gli stessi
+# dell'app Android della PWA): e' il solo cambiamento: i NOMI DEI SEGRETI qui
+# sopra restano quelli di prima.
+#
+# La chiave NON entra mai nel repository: viene ricostruita in un file
+# temporaneo del runner, usata per firmare e poi cancellata.
+
+name: Release APK
 
 on:
   push:
     tags:
       - 'v*'
-  # Avviabile anche a mano su un tag: serve a "Crea release" (crea-release.yml),
-  # perche' un tag creato con GITHUB_TOKEN non fa partire i trigger "push: tags".
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-apk-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Decodifica keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/keystore.jks"
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/release.jks"
 
       - name: Build APK release firmato
         env:
-          KEYSTORE_FILE: ${{ runner.temp }}/keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          TBE_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          TBE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          TBE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          TBE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon assembleRelease
@@ -60,29 +78,39 @@ jobs:
 
       - name: Pulisci keystore
         if: always()
-        run: rm -f "$RUNNER_TEMP/keystore.jks"
+        run: rm -f "$RUNNER_TEMP/release.jks"
 
-      - name: Titolo e testo della Release dal README
-        id: note
+      - name: Crea la Release (se non esiste) e allega l'APK
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          # Regola: titolo = primo titolo "# " del README + spazio + tag;
-          # testo = il README dalla prima riga non vuota dopo quel titolo.
-          [ -f README.md ] || { echo "::error::README.md non trovato"; exit 1; }
-          RIGA="$(grep -n -m1 -E '^# ' README.md | cut -d: -f1 || true)"
-          [ -n "$RIGA" ] || { echo "::error::Nessun titolo '# ' in README.md"; exit 1; }
-          TITOLO="$(sed -n "${RIGA}p" README.md | sed -E 's/^# +//; s/\r$//; s/[[:space:]]+$//')"
-          NOTE="$RUNNER_TEMP/note-release.md"
-          tail -n +"$((RIGA + 1))" README.md \
-            | awk 'BEGIN{p=0} { if (!p && $0 ~ /^[[:space:]\r]*$/) next; p=1; print }' > "$NOTE"
-          echo "nome=${TITOLO} ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "note=$NOTE" >> "$GITHUB_OUTPUT"
-          echo "- **Titolo Release:** ${TITOLO} ${GITHUB_REF_NAME}" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Allega l'APK alla Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ steps.note.outputs.nome }}
-          body_path: ${{ steps.note.outputs.note }}
-          files: out/*.apk
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "La Release $TAG esiste già: ne lascio titolo e testo come sono."
+            echo "- **Release:** $TAG (già esistente)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            # Regola del progetto: titolo = primo titolo "# " del README + spazio + tag;
+            # testo = il README dalla prima riga non vuota dopo quel titolo.
+            [ -f README.md ] || { echo "::error::README.md non trovato"; exit 1; }
+            RIGA="$(grep -n -m1 -E '^# ' README.md | cut -d: -f1 || true)"
+            [ -n "$RIGA" ] || { echo "::error::Nessun titolo '# ' in README.md"; exit 1; }
+            TITOLO="$(sed -n "${RIGA}p" README.md | sed -E 's/^# +//; s/\r$//; s/[[:space:]]+$//')"
+            NOTE="$RUNNER_TEMP/note-release.md"
+            tail -n +"$((RIGA + 1))" README.md \
+              | awk 'BEGIN{p=0} { if (!p && $0 ~ /^[[:space:]\r]*$/) next; p=1; print }' > "$NOTE"
+            OPZ=()
+            # Un tag che finisce con "bN" (es. v26.1.1b2) e' una beta: pre-release.
+            # Attenzione: non basta "contiene una lettera", perche' il prefisso
+            # del tag e' esso stesso una lettera ("v").
+            if [[ "$TAG" =~ b[0-9]+$ ]]; then OPZ+=(--prerelease); fi
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "${TITOLO} ${TAG}" \
+              --notes-file "$NOTE" \
+              "${OPZ[@]}"
+            echo "- **Release creata:** ${TITOLO} ${TAG}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          gh release upload "$TAG" out/*.apk --repo "$GITHUB_REPOSITORY" --clobber
+          echo "- **APK allegato:** $(ls out/*.apk)" >> "$GITHUB_STEP_SUMMARY"

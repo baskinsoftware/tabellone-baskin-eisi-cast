@@ -118,7 +118,7 @@ aggiornamenti automatici** prima di considerarli affidabili.
    ```bash
    git clone https://github.com/baskinsoftware/tabellone-baskin-eisi-cast.git
    cd tabellone-baskin-eisi-cast
-   git checkout v26.1
+   git checkout v26.1.1
    ./gradlew assembleRelease
    ```
    Deve concludersi senza chiedere keystore né credenziali.

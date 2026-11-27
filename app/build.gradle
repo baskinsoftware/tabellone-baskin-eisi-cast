@@ -49,15 +49,15 @@ android {
     def pwaVersion = "26.1"     // PWA realmente incorporata in assets/pwa/
     def targetPwa  = "26.1"     // PWA che questa versione rispecchia (= pwaVersion
                                 // dopo il re-sync; durante una beta può precederlo)
-    def castPatch  = 0          // >0 solo per modifiche al solo Cast
+    def castPatch  = 1          // >0 solo per modifiche al solo Cast
     def beta       = 0          // 0 = release finale; N>0 = beta "bN"
-    def appVersion = "26.1"     // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
+    def appVersion = "26.1.1"   // targetPwa (+ ".castPatch" se >0) (+ "bN" se beta>0)
 
     defaultConfig {
         applicationId "io.github.baskinsoftware.tabellonebaskineisicast"
         minSdk 21
         targetSdk 34
-        versionCode 260100
+        versionCode 260101
         versionName appVersion
 
         // esposte al codice/BuildConfig per un'eventuale schermata "Info"
@@ -130,16 +130,33 @@ android {
         buildConfig true
     }
 
+    // ── Firma della release (convenzione allineata alla PWA) ─────────────────
+    // Dalla 26.1.1 i nomi delle variabili d'ambiente sono gli stessi dell'app
+    // Android della PWA (prefisso TBE_), così i due progetti si firmano nello
+    // stesso modo e gli stessi passi di CI valgono per entrambi:
+    //
+    //   TBE_KEYSTORE_PATH       percorso del keystore .jks
+    //   TBE_KEYSTORE_PASSWORD   password dello store
+    //   TBE_KEY_ALIAS           alias della chiave
+    //   TBE_KEY_PASSWORD        password della chiave
+    //
+    // I SEGRETI del repository restano invariati (KEYSTORE_BASE64,
+    // KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD): cambia solo il nome con cui
+    // i workflow li passano a Gradle.
+    //
+    // Il signingConfig ora NON viene nemmeno dichiarato quando il keystore
+    // manca: prima esisteva sempre, vuoto, ed era la causa dell'errore
+    // "Tag number over 30 is not supported" quando il file del keystore era
+    // assente o vuoto. Senza la variabile la build release esce non firmata
+    // (è il caso di beta.yml e delle build in locale).
+    def ksPath = System.getenv("TBE_KEYSTORE_PATH")
     signingConfigs {
-        release {
-            // Firma attiva solo se sono presenti le variabili d'ambiente (es. in CI
-            // GitHub Actions). In locale, senza variabili, il build non è firmato.
-            def ksFile = System.getenv("KEYSTORE_FILE")
-            if (ksFile != null) {
-                storeFile file(ksFile)
-                storePassword System.getenv("KEYSTORE_PASSWORD")
-                keyAlias System.getenv("KEY_ALIAS")
-                keyPassword System.getenv("KEY_PASSWORD")
+        if (ksPath) {
+            release {
+                storeFile file(ksPath)
+                storePassword System.getenv("TBE_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("TBE_KEY_ALIAS")
+                keyPassword System.getenv("TBE_KEY_PASSWORD")
             }
         }
     }
@@ -152,9 +169,7 @@ android {
         release {
             minifyEnabled false
             shrinkResources false
-            if (System.getenv("KEYSTORE_FILE") != null) {
-                signingConfig signingConfigs.release
-            }
+            if (ksPath) signingConfig signingConfigs.release
         }
     }
 

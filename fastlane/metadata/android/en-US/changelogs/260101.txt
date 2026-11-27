@@ -1,0 +1,5 @@
+APK signing aligned with the PWA app: same signing variable names, and the signing
+config is only declared when a keystore is actually present. Publishing workflow
+rebuilt on the PWA model: the Release is created with the title and text taken from
+the README, with switches for pre-release and draft, and the APK replaces the previous
+one instead of piling up. No changes to the scoreboard itself.

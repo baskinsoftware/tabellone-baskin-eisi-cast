@@ -1,3 +1,5 @@
+# play-prepare.yml by Daniele Lolli (UncleDan) feat. Claude AI - Release 1.1 - 2026-11-27 15-59-23
+#
 name: Prepara AAB per Google Play
 
 # Compila e firma l'Android App Bundle (.aab) richiesto da Google Play Console.
@@ -20,6 +22,10 @@ name: Prepara AAB per Google Play
 #   KEYSTORE_PASSWORD   password dello store
 #   KEY_ALIAS           alias della chiave
 #   KEY_PASSWORD        password della chiave
+#
+# Dalla 26.1.1 i segreti vengono passati a Gradle con i nomi TBE_* (gli stessi
+# dell'app Android della PWA): cambia solo il nome delle variabili, non quello
+# dei segreti.
 
 on:
   push:
@@ -37,28 +43,35 @@ on:
           - production
         default: internal
 
+permissions:
+  contents: read
+
+concurrency:
+  group: play-aab-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Decodifica keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/keystore.jks"
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/release.jks"
 
       - name: Build AAB release firmato
         env:
-          KEYSTORE_FILE: ${{ runner.temp }}/keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          TBE_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          TBE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          TBE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          TBE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon bundleRelease
@@ -82,10 +95,10 @@ jobs:
 
       - name: Pulisci keystore
         if: always()
-        run: rm -f "$RUNNER_TEMP/keystore.jks"
+        run: rm -f "$RUNNER_TEMP/release.jks"
 
       - name: Carica l'AAB come artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: TabelloneBaskinCast-${{ env.VERSION_LABEL }}-${{ env.TRACK }}-signed
           path: out/*.aab
